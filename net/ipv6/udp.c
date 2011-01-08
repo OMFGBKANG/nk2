@@ -438,8 +438,12 @@ try_again:
 
 out_free:
 	skb_free_datagram_locked(sk, skb);
+//out:
+//	return err;
 out:
-	return err;
+	if (err > 0)
+		uid_stat_udp_rcv(current_uid(), err);
+	return err;	
 
 csum_copy_err:
 	slow = lock_sock_fast(sk);
@@ -1215,8 +1219,11 @@ do_append_data:
 out:
 	dst_release(dst);
 	fl6_sock_release(flowlabel);
-	if (!err)
+	if (!err) {
+	    uid_stat_udp_snd(current_uid(), len);
 		return len;
+		
+	}		
 	/*
 	 * ENOBUFS = no kernel mem, SOCK_NOSPACE = no sndbuf space.  Reporting
 	 * ENOBUFS might not be good (it's not tunable per se), but otherwise
