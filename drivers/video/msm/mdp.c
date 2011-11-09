@@ -976,6 +976,36 @@ void mdp_hw_version(void)
 				__func__, mdp_hw_revision);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_FB_MSM_MDP40
+static void configure_mdp_core_clk_table(uint32 min_clk_rate)
+{
+	uint8 count;
+	uint32 current_rate;
+	if (mdp_clk && mdp_pdata && mdp_pdata->mdp_core_clk_table) {
+		min_clk_rate = clk_round_rate(mdp_clk, min_clk_rate);
+		if (clk_set_rate(mdp_clk, min_clk_rate) < 0)
+			printk(KERN_ERR "%s: clk_set_rate failed\n",
+							 __func__);
+		else {
+			count = 0;
+			current_rate = clk_get_rate(mdp_clk);
+			while (count < mdp_pdata->num_mdp_clk) {
+				if (mdp_pdata->mdp_core_clk_table[count]
+						< current_rate) {
+					mdp_pdata->
+					mdp_core_clk_table[count] =
+							current_rate;
+				}
+				count++;
+			}
+		}
+	}
+}
+#endif
+
+>>>>>>> 563c762... msm_fb: Discontinue use of clk_set_min_rate()
 #ifdef CONFIG_MSM_BUS_SCALING
 static uint32_t mdp_bus_scale_handle;
 int mdp_bus_scale_update_request(uint32_t index)
