@@ -1,4 +1,8 @@
 /* Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2011 Sony Ericsson Mobile Communications AB.
+>>>>>>> 213b265... Add Genlock support
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
