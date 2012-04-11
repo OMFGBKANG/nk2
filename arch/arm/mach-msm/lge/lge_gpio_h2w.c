@@ -38,6 +38,8 @@
 #include <mach/board.h>
 #include <mach/vreg.h>
 #include <mach/board_lge.h>
+/* kzalloc needs this! */
+#include <linux/slab.h>
 
 //#define DEBUG_H2W
 #ifdef DEBUG_H2W
