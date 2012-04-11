@@ -45,17 +45,11 @@
 
 #ifdef CONFIG_ARCH_MSM7X27
 #define MSM_PMEM_MDP_SIZE	0x1B76000
-//LGSI_CHANGE_S[pranav.s@lge.com]
-//LGE_CHANGE[byungsik.choi@lge.com]2010-07-08 chage pmem_adsp size for camera memory allocation
-//#define MSM_PMEM_ADSP_SIZE     0xAE4000
-//#define MSM_PMEM_ADSP_SIZE     0xE4E1C0
-// Incrementing pmem size to accomodate a separate post view buffer 0.7 MB.
-#define MSM_PMEM_ADSP_SIZE     0xF00000
-//LGSI_CHANGE_S[pranav.s@lge.com]
-#define MSM_PMEM_AUDIO_SIZE    0x5B000
-#define MSM_FB_SIZE            0x177000
-#define MSM_GPU_PHYS_SIZE      SZ_2M
-#define PMEM_KERNEL_EBI1_SIZE  0x1C000
+#define MSM_PMEM_ADSP_SIZE	0xB71000
+#define MSM_PMEM_AUDIO_SIZE	0x5B000
+#define MSM_FB_SIZE		0x177000
+#define MSM_GPU_PHYS_SIZE	SZ_2M
+#define PMEM_KERNEL_EBI1_SIZE	0x1C000
 
 /* Using lower 1MB of OEMSBL memory for GPU_PHYS */
 #define MSM_GPU_PHYS_START_ADDR	 0xD600000ul
@@ -63,14 +57,10 @@
 
 /* Using upper 1/2MB of Apps Bootloader memory*/
 #define MSM_PMEM_AUDIO_START_ADDR	0x80000ul
-/*LGSI_CHANGE_S <pranav.s@lge.com>:TA charging current for sprint changed to 700mA */ 
-// LGE_CHANGE [dojip.kim@lge.com] 2010-09-02, for Sprint
-#ifdef CONFIG_MACH_MSM7X27_THUNDERC_SPRINT
+
 /* TA charger */
 #define LS670_TA_CHG_CURRENT	700
 #define LS670_USB_CHG_CURRENT	400
-#endif
-/*LGSI_CHANGE_E <pranav.s@lge.com>:TA charging current for sprint changed to 700mA */ 
 
 /* board revision information */
 enum {
@@ -105,6 +95,7 @@ struct touch_platform_data {
 	int ts_y_min;
 	int ts_y_max;
 	int (*power)(unsigned char onoff);
+	int (*pulldown)(int onoff);
 	int irq;
 	int scl;
 	int sda;
@@ -349,7 +340,6 @@ unsigned lge_get_lpm_info(void);
 
 #define CAMERA_POWER_ON				0
 #define CAMERA_POWER_OFF			1
-//pranav.s
 int camera_status(void);
 
 typedef void (gpio_i2c_init_func_t)(int bus_num);
