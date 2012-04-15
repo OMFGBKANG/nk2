@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.
+=======
+/* Copyright (c) 2009, Code Aurora Forum. All rights reserved.
+>>>>>>> 898da54... Back to old "camera: snapshot"
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -131,7 +135,10 @@ static long msm_v4l2_ioctl(struct file *filep,
 			   unsigned int cmd, unsigned long arg)
 {
 	struct msm_ctrl_cmd *ctrlcmd;
+<<<<<<< HEAD
 	struct msm_frame *frame;
+=======
+>>>>>>> 898da54... Back to old "camera: snapshot"
 	int rc;
 
 	D("msm_v4l2_ioctl, cmd = %d, %d\n", cmd, __LINE__);
@@ -160,9 +167,15 @@ static long msm_v4l2_ioctl(struct file *filep,
 
 	case MSM_V4L2_GET_PICTURE:
 		D("msm_v4l2_ioctl,  MSM_V4L2_GET_PICTURE v4l2 ioctl %d\n", cmd);
+<<<<<<< HEAD
 		frame = (struct msm_frame *)arg;
 		return g_pmsm_v4l2_dev->drv->get_pict(
 				g_pmsm_v4l2_dev->drv->sync, frame);
+=======
+		ctrlcmd = (struct msm_ctrl_cmd *)arg;
+		return g_pmsm_v4l2_dev->drv->get_pict(
+				g_pmsm_v4l2_dev->drv->sync, ctrlcmd);
+>>>>>>> 898da54... Back to old "camera: snapshot"
 
 	default:
 		D("msm_v4l2_ioctl, standard v4l2 ioctl %d\n", cmd);
