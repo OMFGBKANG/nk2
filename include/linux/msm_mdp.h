@@ -285,6 +285,7 @@ struct msmfb_overlay_3d {
 	uint32_t height;
 };
 
+
 struct msmfb_overlay_blt {
 	uint32_t enable;
 	uint32_t offset;
@@ -292,9 +293,6 @@ struct msmfb_overlay_blt {
 	uint32_t height;
 	uint32_t bpp;
 };
-
-
-
 
 struct mdp_histogram {
 	uint32_t frame_cnt;
