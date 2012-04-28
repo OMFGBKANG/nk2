@@ -367,11 +367,7 @@ struct msm_v4l2_driver {
 	int (*reg_pmem)(struct msm_sync *, struct msm_pmem_info *);
 	int (*get_frame) (struct msm_sync *, struct msm_frame *);
 	int (*put_frame) (struct msm_sync *, struct msm_frame *);
-<<<<<<< HEAD
-	int (*get_pict) (struct msm_sync *, struct msm_frame *);
-=======
 	int (*get_pict) (struct msm_sync *, struct msm_ctrl_cmd *);
->>>>>>> 898da54... Back to old "camera: snapshot"
 	unsigned int (*drv_poll) (struct msm_sync *, struct file *,
 				struct poll_table_struct *);
 };

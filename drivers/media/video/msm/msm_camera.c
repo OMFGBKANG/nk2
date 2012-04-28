@@ -250,7 +250,7 @@ static void msm_enqueue_vpe(struct msm_device_queue *queue,
 		qcmd = list_first_entry(&__q->list,		\
 			struct msm_queue_cmd, member);		\
 		if (qcmd) {					\
-			if (&qcmd->member)	\
+			if ((&qcmd->member) && (&qcmd->member.next))	\
 				list_del_init(&qcmd->member);		\
 			free_qcmd(qcmd);				\
 		}							\
@@ -2489,7 +2489,7 @@ static int __msm_release(struct msm_sync *sync)
 			kfree(region);
 		}
 		msm_queue_drain(&sync->pict_q, list_pict);
-		msm_queue_drain(&sync->event_q, list_config);
+
 
 		wake_unlock(&sync->wake_lock);
 		sync->apps_id = NULL;
@@ -2874,12 +2874,12 @@ vfe_for_config:
 	CDBG("%s: msm_enqueue event_q\n", __func__);
 	if (sync->frame_q.len <= 100 && sync->event_q.len <= 100) {
 		msm_enqueue(&sync->event_q, &qcmd->list_config);
-	} else if (sync->event_q.len > 100) {
-		pr_err("%s, Error Event Queue limit exceeded f_q = %d, e_q = %d\n",
-			__func__, sync->frame_q.len, sync->event_q.len);
-		qcmd->error_code = 0xffffffff;
-		qcmd->command = NULL;
-		msm_enqueue(&sync->frame_q, &qcmd->list_frame);
+
+
+
+
+
+
 	} else {
 		pr_err("%s, Error Queue limit exceeded f_q = %d, e_q = %d\n",
 			__func__, sync->frame_q.len, sync->event_q.len);
@@ -2958,11 +2958,11 @@ static struct msm_vfe_callback msm_vfe_s = {
 	.vfe_free = msm_vfe_sync_free,
 };
 
-static int __msm_open(struct msm_cam_device *pmsm, const char *const apps_id,
+static int __msm_open(struct msm_sync *sync, const char *const apps_id,
 			int is_controlnode)
 {
 	int rc = 0;
-	struct msm_sync *sync = pmsm->sync;
+
 
 	mutex_lock(&sync->lock);
 	if (sync->apps_id && strcmp(sync->apps_id, apps_id)
@@ -2989,28 +2989,28 @@ static int __msm_open(struct msm_cam_device *pmsm, const char *const apps_id,
 			if (rc < 0) {
 				pr_err("%s: setting sensor clocks failed: %d\n",
 					__func__, rc);
-				goto msm_open_err;
+				goto msm_open_done;
 			}
 			rc = sync->sctrl.s_init(sync->sdata);
 			if (rc < 0) {
 				pr_err("%s: sensor init failed: %d\n",
 					__func__, rc);
-				msm_camio_sensor_clk_off(sync->pdev);
-				goto msm_open_err;
+
+				goto msm_open_done;
 			}
 			rc = sync->vfefn.vfe_init(&msm_vfe_s,
 				sync->pdev);
 			if (rc < 0) {
 				pr_err("%s: vfe_init failed at %d\n",
 					__func__, rc);
-				sync->sctrl.s_release();
-				msm_camio_sensor_clk_off(sync->pdev);
-				goto msm_open_err;
+
+
+				goto msm_open_done;
 			}
 		} else {
 			pr_err("%s: no sensor init func\n", __func__);
 			rc = -ENODEV;
-			goto msm_open_err;
+			goto msm_open_done;
 		}
 		msm_camvpe_fn_init(&sync->vpefn, sync);
 
@@ -3029,10 +3029,10 @@ msm_open_done:
 	mutex_unlock(&sync->lock);
 	return rc;
 
-msm_open_err:
-	atomic_set(&pmsm->opened, 0);
-	mutex_unlock(&sync->lock);
-	return rc;
+
+
+
+
 }
 
 static int msm_open_common(struct inode *inode, struct file *filep,
@@ -3057,7 +3057,7 @@ static int msm_open_common(struct inode *inode, struct file *filep,
 		return rc;
 	}
 
-	rc = __msm_open(pmsm, MSM_APPS_ID_PROP, is_controlnode);
+	rc = __msm_open(pmsm->sync, MSM_APPS_ID_PROP, is_controlnode);
 	if (rc < 0)
 		return rc;
 	filep->private_data = pmsm;
@@ -3065,13 +3065,13 @@ static int msm_open_common(struct inode *inode, struct file *filep,
 	return rc;
 }
 
-static int msm_open_frame(struct inode *inode, struct file *filep)
-{
-	struct msm_cam_device *pmsm =
-		container_of(inode->i_cdev, struct msm_cam_device, cdev);
-	msm_queue_drain(&pmsm->sync->frame_q, list_frame);
-	return msm_open_common(inode, filep, 1, 0);
-}
+
+
+
+
+
+
+
 
 static int msm_open(struct inode *inode, struct file *filep)
 {
@@ -3166,7 +3166,7 @@ static const struct file_operations msm_fops_control = {
 
 static const struct file_operations msm_fops_frame = {
 	.owner = THIS_MODULE,
-	.open = msm_open_frame,
+	.open = msm_open,
 	.unlocked_ioctl = msm_ioctl_frame,
 	.release = msm_release_frame,
 	.poll = msm_poll_frame,
