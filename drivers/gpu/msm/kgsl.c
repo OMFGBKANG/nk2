@@ -62,7 +62,7 @@ static int kgsl_add_event(struct kgsl_device *device, u32 ts,
 {
 	struct kgsl_event *event;
 	struct list_head *n;
-	unsigned int cur = device->ftbl->readtimestamp(device,
+    unsigned int cur = device->ftbl->readtimestamp(device,
 		KGSL_TIMESTAMP_RETIRED);
 
 	if (cb == NULL)
