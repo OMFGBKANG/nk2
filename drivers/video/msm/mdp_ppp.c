@@ -1380,13 +1380,13 @@ int mdp_ppp_blit(struct fb_info *info, struct mdp_blit_req *req)
 
 	if (iBuf.mdpImg.imgType == MDP_Y_CBCR_H2V2_ADRENO)
 		iBuf.mdpImg.cbcr_addr =
-		(uint32 *) ((uint32) iBuf.mdpImg.bmy_addr +
-		ALIGN((ALIGN(req->src.width, 32) *
-		ALIGN(req->src.height, 32)), 4096));
+		    (uint32 *) ((uint32) iBuf.mdpImg.bmy_addr +
+		        ALIGN((ALIGN(req->src.width, 32) *
+		        ALIGN(req->src.height, 32)), 4096));
 	else
 		iBuf.mdpImg.cbcr_addr =
-		(uint32 *) ((uint32) iBuf.mdpImg.bmy_addr +
-		req->src.width * req->src.height);
+		    (uint32 *) ((uint32) iBuf.mdpImg.bmy_addr +
+		        req->src.width * req->src.height);
 
 	iBuf.mdpImg.mdpOp = MDPOP_NOP;
 
