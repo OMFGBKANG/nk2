@@ -2347,10 +2347,6 @@ do {								\
 })
 #endif
 
-#define MODULE_ALIAS_NETDEV(device) \
-	MODULE_ALIAS("netdev-" device)
-
-
 #endif /* __KERNEL__ */
 
 #endif	/* _LINUX_NETDEVICE_H */
