@@ -1,7 +1,11 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.10
+<<<<<<< HEAD:arch/arm/configs/cyanogenmod_thunderg_defconfig
 # Wed Apr 11 10:30:42 2012
+=======
+# Thu May 24 17:52:51 2012
+>>>>>>> 6d23ebc... Add TINY_PREEMPT_RCU, RCU tweaks.:arch/arm/configs/caf_defconfig
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -65,7 +69,24 @@ CONFIG_RCU_FANOUT=32
 CONFIG_IKCONFIG=y
 CONFIG_IKCONFIG_PROC=y
 CONFIG_LOG_BUF_SHIFT=17
+<<<<<<< HEAD:arch/arm/configs/cyanogenmod_thunderg_defconfig
 # CONFIG_CGROUPS is not set
+=======
+CONFIG_CGROUPS=y
+# CONFIG_CGROUP_DEBUG is not set
+# CONFIG_CGROUP_NS is not set
+CONFIG_CGROUP_FREEZER=y
+# CONFIG_CGROUP_DEVICE is not set
+# CONFIG_CPUSETS is not set
+# CONFIG_CGROUP_CPUACCT is not set
+CONFIG_RESOURCE_COUNTERS=y
+# CONFIG_CGROUP_MEM_RES_CTLR is not set
+CONFIG_CGROUP_SCHED=y
+CONFIG_FAIR_GROUP_SCHED=y
+# CONFIG_RT_GROUP_SCHED is not set
+# CONFIG_BLK_CGROUP is not set
+CONFIG_SCHED_AUTOGROUP=y
+>>>>>>> 6d23ebc... Add TINY_PREEMPT_RCU, RCU tweaks.:arch/arm/configs/caf_defconfig
 # CONFIG_SYSFS_DEPRECATED_V2 is not set
 CONFIG_RELAY=y
 # CONFIG_NAMESPACES is not set
