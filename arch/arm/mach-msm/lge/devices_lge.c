@@ -300,13 +300,9 @@ static void __init lge_make_fb_pmem(void)
 
 	return;
 }
-#endif
-
 void __init msm_add_fb_device(void) 
 {
-#ifdef CONFIG_LGE_HIDDEN_RESET_PATCH
 	lge_make_fb_pmem();
-#endif
 	platform_device_register(&msm_fb_device);
 }
 
@@ -346,7 +342,8 @@ void __init msm_add_kgsl_device(void)
 	/* OEMs may modify the value at their discretion for performance */
 	/* The appropriate maximum replacement for 160000 is: */
 	/* clk_get_max_axi_khz() */
-	kgsl_pdata.high_axi_3d = 160000;
+	kgsl_pdata.high_axi_3d = clk_get_max_axi_khz();
+
 
 	/* 7x27 doesn't allow graphics clocks to be run asynchronously to */
 	/* the AXI bus */
@@ -362,11 +359,17 @@ void __init msm_add_kgsl_device(void)
 	kgsl_pdata.grp2d0_clk_name = NULL;
 	kgsl_pdata.idle_timeout_3d = HZ/5;
 	kgsl_pdata.idle_timeout_2d = 0;
+
 #ifdef CONFIG_KGSL_PER_PROCESS_PAGE_TABLE
 	kgsl_pdata.pt_va_size = SZ_32M;
+	/* Maximum of 32 concurrent processes */
+	kgsl_pdata.pt_max_count = 32;
 #else
 	kgsl_pdata.pt_va_size = SZ_128M;
+	/* We only ever have one pagetable for everybody */
+	kgsl_pdata.pt_max_count = 1;
 #endif
+
 	platform_device_register(&msm_device_kgsl);
 }
 #endif
