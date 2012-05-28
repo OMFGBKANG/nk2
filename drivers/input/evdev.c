@@ -58,7 +58,11 @@ static void evdev_pass_event(struct evdev_client *client,
 	 * Interrupts are disabled, just acquire the lock
 	 */
 	spin_lock(&client->buffer_lock);
+<<<<<<< HEAD
 	wake_lock_timeout(&client->wake_lock, HZ / 10); //5 * HZ);
+=======
+	wake_lock_timeout(&client->wake_lock, HZ/10);
+>>>>>>> 5b0e4e0... Fast Sleep, wake lock timer change. (wistilt2)
 	client->buffer[client->head++] = *event;
 	client->head &= EVDEV_BUFFER_SIZE - 1;
 	spin_unlock(&client->buffer_lock);
