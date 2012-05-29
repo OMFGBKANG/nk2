@@ -1,7 +1,7 @@
 /*
  * Automatically generated C config: don't edit
  * Linux kernel version: 2.6.35.7
- * Mon May 28 20:58:25 2012
+ * Mon May 28 22:15:31 2012
  */
 #define AUTOCONF_INCLUDED
 #define CONFIG_IP6_NF_MATCH_AH 1
@@ -143,6 +143,7 @@
 #define CONFIG_IP_NF_TARGET_LOG 1
 #define CONFIG_USB_F_SERIAL 1
 #define CONFIG_HAS_WAKELOCK 1
+#define CONFIG_LGE_UNIFIED_LED 1
 #define CONFIG_STANDALONE 1
 #define CONFIG_CPU_FREQ_GOV_PERFORMANCE 1
 #define CONFIG_ARCH_HAS_CPUFREQ 1
