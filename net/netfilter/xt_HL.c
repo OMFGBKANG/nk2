@@ -1,14 +1,23 @@
 /*
+<<<<<<< HEAD
  * TTL modification target for IP tables
  * (C) 2000,2005 by Harald Welte <laforge@netfilter.org>
  *
  * Hop Limit modification target for ip6tables
  * Maciej Soltysiak <solt@dns.toxicfilms.tv>
+=======
+ * IP tables module for matching the value of the TTL
+ * (C) 2000,2001 by Harald Welte <laforge@netfilter.org>
+ *
+ * Hop Limit matching module
+ * (C) 2001-2002 Maciej Soltysiak <solt@dns.toxicfilms.tv>
+>>>>>>> 9b6a062... Fix compiling and changes for smartassV2 governor.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -149,10 +158,82 @@ static struct xt_target hl_tg_reg[] __read_mostly = {
 		.targetsize = sizeof(struct ip6t_HL_info),
 		.table      = "mangle",
 		.checkentry = hl_tg6_check,
+=======
+
+#include <linux/ip.h>
+#include <linux/ipv6.h>
+#include <linux/module.h>
+#include <linux/skbuff.h>
+
+#include <linux/netfilter/x_tables.h>
+#include <linux/netfilter_ipv4/ipt_ttl.h>
+#include <linux/netfilter_ipv6/ip6t_hl.h>
+
+MODULE_AUTHOR("Maciej Soltysiak <solt@dns.toxicfilms.tv>");
+MODULE_DESCRIPTION("Xtables: Hoplimit/TTL field match");
+MODULE_LICENSE("GPL");
+MODULE_ALIAS("ipt_ttl");
+MODULE_ALIAS("ip6t_hl");
+
+static bool ttl_mt(const struct sk_buff *skb, struct xt_action_param *par)
+{
+	const struct ipt_ttl_info *info = par->matchinfo;
+	const u8 ttl = ip_hdr(skb)->ttl;
+
+	switch (info->mode) {
+		case IPT_TTL_EQ:
+			return ttl == info->ttl;
+		case IPT_TTL_NE:
+			return ttl != info->ttl;
+		case IPT_TTL_LT:
+			return ttl < info->ttl;
+		case IPT_TTL_GT:
+			return ttl > info->ttl;
+	}
+
+	return false;
+}
+
+static bool hl_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+{
+	const struct ip6t_hl_info *info = par->matchinfo;
+	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
+
+	switch (info->mode) {
+		case IP6T_HL_EQ:
+			return ip6h->hop_limit == info->hop_limit;
+		case IP6T_HL_NE:
+			return ip6h->hop_limit != info->hop_limit;
+		case IP6T_HL_LT:
+			return ip6h->hop_limit < info->hop_limit;
+		case IP6T_HL_GT:
+			return ip6h->hop_limit > info->hop_limit;
+	}
+
+	return false;
+}
+
+static struct xt_match hl_mt_reg[] __read_mostly = {
+	{
+		.name       = "ttl",
+		.revision   = 0,
+		.family     = NFPROTO_IPV4,
+		.match      = ttl_mt,
+		.matchsize  = sizeof(struct ipt_ttl_info),
+		.me         = THIS_MODULE,
+	},
+	{
+		.name       = "hl",
+		.revision   = 0,
+		.family     = NFPROTO_IPV6,
+		.match      = hl_mt6,
+		.matchsize  = sizeof(struct ip6t_hl_info),
+>>>>>>> 9b6a062... Fix compiling and changes for smartassV2 governor.
 		.me         = THIS_MODULE,
 	},
 };
 
+<<<<<<< HEAD
 static int __init hl_tg_init(void)
 {
 	return xt_register_targets(hl_tg_reg, ARRAY_SIZE(hl_tg_reg));
@@ -167,3 +248,17 @@ module_init(hl_tg_init);
 module_exit(hl_tg_exit);
 MODULE_ALIAS("ipt_TTL");
 MODULE_ALIAS("ip6t_HL");
+=======
+static int __init hl_mt_init(void)
+{
+	return xt_register_matches(hl_mt_reg, ARRAY_SIZE(hl_mt_reg));
+}
+
+static void __exit hl_mt_exit(void)
+{
+	xt_unregister_matches(hl_mt_reg, ARRAY_SIZE(hl_mt_reg));
+}
+
+module_init(hl_mt_init);
+module_exit(hl_mt_exit);
+>>>>>>> 9b6a062... Fix compiling and changes for smartassV2 governor.
