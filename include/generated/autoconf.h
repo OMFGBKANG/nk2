@@ -1,7 +1,7 @@
 /*
  * Automatically generated C config: don't edit
  * Linux kernel version: 2.6.35.7
- * Thu May 31 17:13:37 2012
+ * Fri Jun  8 06:48:51 2012
  */
 #define AUTOCONF_INCLUDED
 #define CONFIG_IP6_NF_MATCH_AH 1
@@ -534,7 +534,7 @@
 #define CONFIG_MSM_CAMERA 1
 #define CONFIG_DEBUG_KERNEL 1
 #define CONFIG_COMPAT_BRK 1
-#define CONFIG_LOCALVERSION "-HK-ICS-CAI-test15"
+#define CONFIG_LOCALVERSION "-HK-ICS-CAI-test16"
 #define CONFIG_RADIO_ADAPTERS 1
 #define CONFIG_CRYPTO 1
 #define CONFIG_DEFAULT_MMAP_MIN_ADDR 32768

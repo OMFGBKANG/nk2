@@ -1,8 +1,8 @@
-/* This file is auto generated, version 16 */
+/* This file is auto generated, version 17 */
 /*  PREEMPT */
 #define UTS_MACHINE "arm"
-#define UTS_VERSION "#16 PREEMPT Thu May 31 17:16:57 CDT 2012"
-#define LINUX_COMPILE_TIME "17:16:57"
+#define UTS_VERSION "#17 PREEMPT Fri Jun 8 06:52:07 CDT 2012"
+#define LINUX_COMPILE_TIME "06:52:07"
 #define LINUX_COMPILE_BY "thekraven"
 #define LINUX_COMPILE_HOST "icsbox"
 #define LINUX_COMPILE_DOMAIN "(none)"
