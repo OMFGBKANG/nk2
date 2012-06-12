@@ -99,6 +99,7 @@ struct ramzswap_stats {
 	u64 failed_writes;	/* can happen when memory is too low */
 	u64 invalid_io;		/* non-swap I/O requests */
 	u64 notify_free;	/* no. of swap slot free notifications */
+	u64 discard;		/* no. of block discard callbacks */
 	u32 pages_zero;		/* no. of zero filled pages */
 	u32 pages_stored;	/* no. of pages currently stored */
 	u32 good_compress;	/* % of pages with compression ratio<=50% */
@@ -126,42 +127,14 @@ struct ramzswap {
 	struct ramzswap_stats stats;
 };
 
-/*-- */
 
-/* Debugging and Stats */
-#if defined(CONFIG_RAMZSWAP_STATS)
-static void rzs_stat_inc(u32 *v)
-{
-	*v = *v + 1;
-}
+extern struct zram *zram_devices;
+extern unsigned int num_devices;
+#ifdef CONFIG_SYSFS
+extern struct attribute_group zram_disk_attr_group;
+#endif
 
-static void rzs_stat_dec(u32 *v)
-{
-	*v = *v - 1;
-}
-
-static void rzs_stat64_inc(struct ramzswap *rzs, u64 *v)
-{
-	spin_lock(&rzs->stat64_lock);
-	*v = *v + 1;
-	spin_unlock(&rzs->stat64_lock);
-}
-
-static u64 rzs_stat64_read(struct ramzswap *rzs, u64 *v)
-{
-	u64 val;
-
-	spin_lock(&rzs->stat64_lock);
-	val = *v;
-	spin_unlock(&rzs->stat64_lock);
-
-	return val;
-}
-#else
-#define rzs_stat_inc(v)
-#define rzs_stat_dec(v)
-#define rzs_stat64_inc(r, v)
-#define rzs_stat64_read(r, v)
-#endif /* CONFIG_RAMZSWAP_STATS */
+extern int zram_init_device(struct zram *zram);
+extern void zram_reset_device(struct zram *zram);
 
 #endif
