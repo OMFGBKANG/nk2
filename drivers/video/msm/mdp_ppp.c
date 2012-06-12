@@ -544,8 +544,8 @@ static void mdp_ppp_setbg(MDPIBUF *iBuf)
 
 #define Y_TO_CRCB_RATIO(format) \
 	((format == MDP_Y_CBCR_H2V2 || format == MDP_Y_CBCR_H2V2_ADRENO || \
-	format == MDP_Y_CRCB_H2V2) ?  2 : (format == MDP_Y_CBCR_H2V1 || \
-	format == MDP_Y_CRCB_H2V1) ?  1 : 1)
+	  format == MDP_Y_CRCB_H2V2) ?  2 : (format == MDP_Y_CBCR_H2V1 || \
+	  format == MDP_Y_CRCB_H2V1) ?  1 : 1)
 
 #ifdef CONFIG_ANDROID_PMEM
 static void get_len(struct mdp_img *img, struct mdp_rect *rect, uint32_t bpp,
@@ -873,6 +873,7 @@ struct mdp_blit_req *req, struct file *p_src_file, struct file *p_dst_file)
 		break;
 
 	case MDP_Y_CBCR_H2V2:
+	case MDP_Y_CBCR_H2V2_ADRENO:
 	case MDP_Y_CRCB_H2V2:
 		inpBpp = 1;
 		src1 = (uint8 *) iBuf->mdpImg.cbcr_addr;
@@ -1064,7 +1065,6 @@ struct mdp_blit_req *req, struct file *p_src_file, struct file *p_dst_file)
 		}
 	}
 
-	src0_ystride = src_width * inpBpp;
 	if (iBuf->mdpImg.imgType == MDP_Y_CBCR_H2V2_ADRENO)
 		src0_ystride = ALIGN(src_width, 32) * inpBpp;
 	else
@@ -1380,13 +1380,13 @@ int mdp_ppp_blit(struct fb_info *info, struct mdp_blit_req *req)
 
 	if (iBuf.mdpImg.imgType == MDP_Y_CBCR_H2V2_ADRENO)
 		iBuf.mdpImg.cbcr_addr =
-		    (uint32 *) ((uint32) iBuf.mdpImg.bmy_addr +
-		        ALIGN((ALIGN(req->src.width, 32) *
-		        ALIGN(req->src.height, 32)), 4096));
+			(uint32 *) ((uint32) iBuf.mdpImg.bmy_addr +
+				ALIGN((ALIGN(req->src.width, 32) *
+				ALIGN(req->src.height, 32)), 4096));
 	else
 		iBuf.mdpImg.cbcr_addr =
-		    (uint32 *) ((uint32) iBuf.mdpImg.bmy_addr +
-		        req->src.width * req->src.height);
+			(uint32 *) ((uint32) iBuf.mdpImg.bmy_addr +
+				req->src.width * req->src.height);
 
 	iBuf.mdpImg.mdpOp = MDPOP_NOP;
 
