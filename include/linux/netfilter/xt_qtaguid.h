@@ -11,3 +11,7 @@
 #define xt_qtaguid_match_info xt_owner_match_info
 
 #endif /* _XT_QTAGUID_MATCH_H */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88952e5... Backport xt_qtaguid socket (fixed batry stats)

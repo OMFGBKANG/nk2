@@ -1,0 +1,17 @@
+#!/bin/bash
+clear
+now=$(date +"%Y%m%d_%H%M")
+# Remove the old modules and old zImage in Anykernel folder.
+rm ~/android/AnyKernel/system/lib/modules/wireless.ko
+rm ~/android/AnyKernel/kernel/zImage
+# Copy the new modules and new zImage to Anykernel folder.
+cp drivers/net/wireless/bcm4325/wireless.ko ~/android/AnyKernel/system/lib/modules
+# If you have tun.ko module,
+# delete the "#" in the line below.
+cp drivers/net/tun.ko ~/android/AnyKernel/system/lib/modules
+cp arch/arm/boot/zImage ~/android/AnyKernel/kernel
+# If you have librasdioif.ko module,
+# delete the "#" in the line below.
+cp drivers/net/wireless/libra/librasdioif.ko ~/android/AnyKernel/system/lib/modules
+cd ~/android/AnyKernel
+zip -r caf-ics-p500-${now}.zip *

@@ -13,6 +13,8 @@
 #define NFT_LOOKUP_LISTENER    1
 #define NFT_LOOKUP_ESTABLISHED 2
 
+#define NFT_LOOKUP_ANY         0
+
 /* look up and get a reference to a matching socket */
 
 
