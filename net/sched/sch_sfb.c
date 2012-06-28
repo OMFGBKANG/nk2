@@ -656,5 +656,3 @@ MODULE_DESCRIPTION("Stochastic Fair Blue queue discipline");
 MODULE_AUTHOR("Juliusz Chroboczek");
 MODULE_LICENSE("GPL");
 
-
-
