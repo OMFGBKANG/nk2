@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.10
-# Tue Jun 26 14:32:39 2012
+# Thu Jun 28 17:33:22 2012
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -883,12 +883,11 @@ CONFIG_NET_SCHED=y
 # Queueing/Scheduling
 #
 # CONFIG_NET_SCH_CBQ is not set
-#CONFIG_NET_SCH_HTB=y
+# CONFIG_NET_SCH_HTB is not set
 # CONFIG_NET_SCH_HFSC is not set
 # CONFIG_NET_SCH_PRIO is not set
 # CONFIG_NET_SCH_MULTIQ is not set
 # CONFIG_NET_SCH_RED is not set
-
 CONFIG_NET_SCH_SFB=y
 # CONFIG_NET_SCH_SFQ is not set
 # CONFIG_NET_SCH_TEQL is not set
