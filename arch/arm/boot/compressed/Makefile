@@ -4,18 +4,10 @@
 # create a compressed vmlinuz image from the original vmlinux
 #
 
-AFLAGS_head.o := -DTEXT_OFFSET=$(TEXT_OFFSET)
-AFLAGS_head.o += -Wa,-march=armv6
 HEAD	= head.o
-AFLAGS_misc.o +=-Wa,-march=armv6
-MISC = misc.o
-AFLAGS_decompress.o += -Wa,-march=armv6
-DECOMPRESS = decompress.o
+OBJS	= misc.o decompress.o
 FONTC	= $(srctree)/drivers/video/console/font_acorn_8x8.c
 
-# string library code (-Os is enforced to keep it much smaller)
-OBJS		+= string.o
-CFLAGS_string.o	:= -Os
 #
 # Architecture dependencies
 #
@@ -77,7 +69,7 @@ suffix_$(CONFIG_KERNEL_LZMA) = lzma
 
 targets       := vmlinux vmlinux.lds \
 		 piggy.$(suffix_y) piggy.$(suffix_y).o \
-		 lib1funcs.o lib1funcs.S font.o font.c head.o misc.o decompress.o $(OBJS)
+		 font.o font.c head.o misc.o $(OBJS)
 
 # Make sure files are removed during clean
 extra-y       += piggy.gzip piggy.lzo piggy.lzma lib1funcs.S
@@ -113,40 +105,19 @@ LDFLAGS_vmlinux += -X
 LDFLAGS_vmlinux += -T
 
 # For __aeabi_uidivmod
-AFLAGS_lib1funcs.o +=-Wa,-march=armv6
 lib1funcs = $(obj)/lib1funcs.o
 
 $(obj)/lib1funcs.S: $(srctree)/arch/$(SRCARCH)/lib/lib1funcs.S FORCE
 	$(call cmd,shipped)
 
-# We need to prevent any GOTOFF relocs being used with references
-# to symbols in the .bss section since we cannot relocate them
-# independently from the rest at run time.  This can be achieved by
-# ensuring that no private .bss symbols exist, as global symbols
-# always have a GOT entry which is what we need.
-# The .data section is already discarded by the linker script so no need
-# to bother about it here.
-check_for_bad_syms = \
-bad_syms=$$($(CROSS_COMPILE)nm $@ | sed -n 's/^.\{8\} [bc] \(.*\)/\1/p') && \
-[ -z "$$bad_syms" ] || \
-  ( echo "following symbols must have non local/private scope:" >&2; \
-    echo "$$bad_syms" >&2; rm -f $@; false )
-
-# For __aeabi_llsl
-AFLAGS_ashldi3.o +=-Wa,-march=armv6
-ashldi3 = $(obj)/ashldi3.o
-
-$(obj)/ashldi3.S: $(srctree)/arch/$(SRCARCH)/lib/ashldi3.S FORCE
-	$(call cmd,shipped)
-$(obj)/vmlinux: $(obj)/vmlinux.lds $(obj)/$(HEAD) $(obj)/$(MISC) $(obj)/$(DECOMPRESS) $(obj)/piggy.$(suffix_y).o \
+$(obj)/vmlinux: $(obj)/vmlinux.lds $(obj)/$(HEAD) $(obj)/piggy.$(suffix_y).o \
 	 	$(addprefix $(obj)/, $(OBJS)) $(lib1funcs) FORCE
 	$(call if_changed,ld)
-	@$(check_for_bad_syms)
+	@:
 
 $(obj)/piggy.$(suffix_y): $(obj)/../Image FORCE
 	$(call if_changed,$(suffix_y))
 
-AFLAGS_piggy.$(suffix_y).o += -Wa,-march=armv6
 $(obj)/piggy.$(suffix_y).o:  $(obj)/piggy.$(suffix_y) FORCE
 
 CFLAGS_font.o := -Dstatic=
