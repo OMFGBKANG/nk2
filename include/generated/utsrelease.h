@@ -1,1 +1,1 @@
-#define UTS_RELEASE "2.6.35.7-HK-ICS-CAI-test17+"
+#define UTS_RELEASE "2.6.35.7-HK-ICS-CAI-test16+"
