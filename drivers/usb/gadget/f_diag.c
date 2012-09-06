@@ -2,7 +2,7 @@
  * Diag Function Device - Route ARM9 and ARM11 DIAG messages
  * between HOST and DEVICE.
  * Copyright (C) 2007 Google, Inc.
- * Copyright (c) 2008-2012, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2008-2011, Code Aurora Forum. All rights reserved.
  * Author: Brian Swetland <swetland@google.com>
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -210,6 +210,11 @@ static void diag_read_complete(struct usb_ep *ep,
 	d_req->status = req->status;
 
 	spin_lock_irqsave(&ctxt->lock, flags);
+#ifdef CONFIG_USB_G_LGE_ANDROID
+    if (!ctxt->configured)
+        usb_ep_free_request(ctxt->out, req);
+    else
+#endif
 	list_add_tail(&req->list, &ctxt->read_pool);
 	spin_unlock_irqrestore(&ctxt->lock, flags);
 

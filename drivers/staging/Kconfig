@@ -153,7 +153,5 @@ source "drivers/staging/gobi/Kconfig"
 
 source "drivers/staging/ath6kl/Kconfig"
 
-source "drivers/staging/snappy/Kconfig"
-
 endif # !STAGING_EXCLUDE_BUILD
 endif # STAGING
