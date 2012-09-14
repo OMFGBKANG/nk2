@@ -327,6 +327,14 @@ config LGE_SUSPEND_HIGH_PRIO_PATCH
 	  For prevent this, raise scheduling policy of "suspend" kthread to SCHED_FIFO when
 	  entering early suspend state, and lower to SCHED_NORMAL when escaping late resume 
 	  state
+	  
+config FORCE_FAST_CHARGE 
+    bool "Force AC charge mode at will" 
+    default y 
+    help 
+      A simple sysfs interface to force adapters that 
+      are detected as USB to charge as AC. 
+	  
 endmenu
 
 endmenu

@@ -53,6 +53,10 @@
 #include <linux/uaccess.h>
 #include <linux/wakelock.h>
 
+#ifdef CONFIG_FORCE_FAST_CHARGE 
+#include <linux/fastchg.h> 
+#endif 
+
 #ifdef CONFIG_USB_SUPPORT_LGE_ANDROID_GADGET
 /* LGE_CHANGE
  * Add Header for LGE USB
@@ -204,6 +208,7 @@ struct usb_info {
 	struct delayed_work chg_stop;
 	struct msm_hsusb_gadget_platform_data *pdata;
 	struct work_struct phy_status_check;
+	
 #ifdef CONFIG_USB_SUPPORT_LGE_ANDROID_FACTORY_CABLE_WQ
 	/* LGE_CHANGE
 	 * Detection of factory cable using wq
@@ -306,21 +311,16 @@ static ssize_t print_switch_state(struct switch_dev *sdev, char *buf)
 static inline enum chg_type usb_get_chg_type(struct usb_info *ui)
 {
 
-#ifdef CONFIG_USB_SUPPORT_LGE_ANDROID_GADGET
-	struct msm_otg *otg = to_msm_otg(ui->xceiv);
-
-	/* LGE_CHANGE
-	 * Check if PIF Cable is connected.
-	 * 2011-01-21, hyunhui.park@lge.com
-	 */
-	lgeusb_cable_type = lgeusb_detect_factory_cable();
-	atomic_set(&otg->lgeusb_cable_type, lgeusb_cable_type);
-#endif
-
+#ifdef CONFIG_FORCE_FAST_CHARGE 
+  if ((readl(USB_PORTSC) & PORTSC_LS) == PORTSC_LS || force_fast_charge == 1) { 
+#else 
 	if ((readl(USB_PORTSC) & PORTSC_LS) == PORTSC_LS)
-		return USB_CHG_TYPE__WALLCHARGER;
-	else
-		return USB_CHG_TYPE__SDP;
+#endif 
+     return USB_CHG_TYPE__WALLCHARGER; 
+  } 
+  else  
+     return USB_CHG_TYPE__SDP; 
+	 
 }
 
 #define USB_WALLCHARGER_CHG_CURRENT 1800
