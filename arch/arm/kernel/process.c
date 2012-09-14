@@ -148,7 +148,6 @@ void cpu_idle(void)
 	while (1) {
 		while (!need_resched()) {
 		leds_event(led_idle_start);
-		idle_notifier_call_chain(IDLE_START);
 		tick_nohz_stop_sched_tick(1);
 #ifdef CONFIG_HOTPLUG_CPU
 			if (cpu_is_offline(smp_processor_id()))
