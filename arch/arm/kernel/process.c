@@ -146,9 +146,9 @@ void cpu_idle(void)
 
 	/* endless idle loop with no priority at all */
 	while (1) {
-		while (!need_resched()) {
-		leds_event(led_idle_start);
 		tick_nohz_stop_sched_tick(1);
+		leds_event(led_idle_start);
+		while (!need_resched()) {
 #ifdef CONFIG_HOTPLUG_CPU
 			if (cpu_is_offline(smp_processor_id()))
 				cpu_die();
