@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
-# Linux kernel version: 2.6.35.10
-# Sun Oct  7 11:23:14 2012
+# Linux kernel version: 2.6.35.14
+# Sun Oct  7 11:40:43 2012
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -664,7 +664,7 @@ CONFIG_IPV6_TUNNEL=y
 CONFIG_IPV6_MULTIPLE_TABLES=y
 # CONFIG_IPV6_SUBTREES is not set
 # CONFIG_IPV6_MROUTE is not set
-CONFIG_ANDROID_PARANOID_NETWORK=y
+# CONFIG_ANDROID_PARANOID_NETWORK is not set
 CONFIG_NET_ACTIVITY_STATS=y
 # CONFIG_NETWORK_SECMARK is not set
 CONFIG_NETFILTER=y
