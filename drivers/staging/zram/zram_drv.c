@@ -422,7 +422,7 @@ static int zram_write(struct zram *zram, struct bio *bio)
 			continue;
 		}
 
-		COMPRESS(uncmem, PAGE_SIZE, src, &clen,
+		COMPRESS(user_mem, PAGE_SIZE, src, &clen,
 					zram->compress_workmem);
 
 		kunmap_atomic(user_mem, KM_USER0);
