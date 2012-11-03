@@ -24,19 +24,16 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ *
+ */
+#ifndef _LEIA_REG_H
+#define _LEIA_REG_H
 
-/* The MSM Hardware supports multiple flavors of physical memory.
- * This file captures hardware specific information of these types.
-*/
+#define REG_LEIA_PC_INDX_OFFSET          REG_VGT_INDX_OFFSET
+#define REG_LEIA_PC_VERTEX_REUSE_BLOCK_CNTL REG_VGT_VERTEX_REUSE_BLOCK_CNTL
+#define REG_LEIA_PC_MAX_VTX_INDX         REG_VGT_MAX_VTX_INDX
+#define REG_LEIA_GRAS_CONTROL            0x2210
+#define REG_LEIA_VSC_BIN_SIZE            0x0C01
+#define REG_LEIA_VSC_PIPE_DATA_LENGTH_7  0x0C1D
 
-#ifndef __ASM_ARCH_MSM_MEMTYPES_H
-#define __ASM_ARCH_MSM_MEMTYPES_H
-
-#include <mach/memory.h>
-/* Redundant check to prevent this from being included outside of 7x30 */
-#if defined(CONFIG_ARCH_MSM7X30)
-unsigned int get_num_populated_chipselects(void);
-#endif
-
-#endif
+#endif /*_LEIA_REG_H*/

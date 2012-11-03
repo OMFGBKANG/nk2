@@ -24,19 +24,16 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ *
+ */
 
-/* The MSM Hardware supports multiple flavors of physical memory.
- * This file captures hardware specific information of these types.
-*/
+#ifndef KGSL_POSTMORTEM_H
+#define KGSL_POSTMORTEM_H
 
-#ifndef __ASM_ARCH_MSM_MEMTYPES_H
-#define __ASM_ARCH_MSM_MEMTYPES_H
+struct kgsl_device;
 
-#include <mach/memory.h>
-/* Redundant check to prevent this from being included outside of 7x30 */
-#if defined(CONFIG_ARCH_MSM7X30)
-unsigned int get_num_populated_chipselects(void);
-#endif
+void kgsl_postmortem_init(struct dentry *);
 
-#endif
+int kgsl_postmortem_dump(struct kgsl_device *device);
+
+#endif /* KGSL_POSTMORTEM_H */

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2002,2007-2010, Code Aurora Forum. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -24,19 +24,17 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ *
+ */
+#ifndef _KGSL_G12_VGV3TYPES_H
+#define _KGSL_G12_VGV3TYPES_H
 
-/* The MSM Hardware supports multiple flavors of physical memory.
- * This file captures hardware specific information of these types.
-*/
+#define VGV3_NEXTCMD_JUMP        0x01
 
-#ifndef __ASM_ARCH_MSM_MEMTYPES_H
-#define __ASM_ARCH_MSM_MEMTYPES_H
+#define VGV3_NEXTCMD_NEXTCMD_FSHIFT 12
+#define VGV3_NEXTCMD_NEXTCMD_FMASK 0x7
 
-#include <mach/memory.h>
-/* Redundant check to prevent this from being included outside of 7x30 */
-#if defined(CONFIG_ARCH_MSM7X30)
-unsigned int get_num_populated_chipselects(void);
-#endif
+#define VGV3_CONTROL_MARKADD_FSHIFT 0
+#define VGV3_CONTROL_MARKADD_FMASK 0xfff
 
-#endif
+#endif	/* KGSL_G12_VGV3TYPES_H */

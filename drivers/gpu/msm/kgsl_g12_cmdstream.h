@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2002,2007-2010, Code Aurora Forum. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -24,19 +24,29 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ *
+ */
+#ifndef _GSL_CMDSTREAM_H
+#define _GSL_CMDSTREAM_H
 
-/* The MSM Hardware supports multiple flavors of physical memory.
- * This file captures hardware specific information of these types.
-*/
+#include <linux/msm_kgsl.h>
 
-#ifndef __ASM_ARCH_MSM_MEMTYPES_H
-#define __ASM_ARCH_MSM_MEMTYPES_H
+struct kgsl_device;
+struct kgsl_device_private;
+struct kgsl_context;
 
-#include <mach/memory.h>
-/* Redundant check to prevent this from being included outside of 7x30 */
-#if defined(CONFIG_ARCH_MSM7X30)
-unsigned int get_num_populated_chipselects(void);
-#endif
+int kgsl_g12_cmdstream_init(struct kgsl_device *device);
 
-#endif
+int kgsl_g12_cmdstream_start(struct kgsl_device *device);
+
+void kgsl_g12_cmdstream_close(struct kgsl_device *device);
+
+unsigned int kgsl_g12_cmdstream_readtimestamp(struct kgsl_device *device,
+					enum kgsl_timestamp_type unused);
+int kgsl_g12_cmdstream_issueibcmds(struct kgsl_device_private *dev_priv,
+			struct kgsl_context *context,
+			struct kgsl_ibdesc *ibdesc,
+			unsigned int numibs,
+			uint32_t *timestamp,
+			unsigned int ctrl);
+#endif  /* _GSL_CMDSTREAM_H */

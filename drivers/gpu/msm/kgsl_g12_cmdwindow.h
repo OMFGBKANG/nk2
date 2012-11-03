@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2002,2007-2010, Code Aurora Forum. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -24,19 +24,15 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ *
+ */
+#ifndef _GSL_CMDWINDOW_H
+#define _GSL_CMDWINDOW_H
 
-/* The MSM Hardware supports multiple flavors of physical memory.
- * This file captures hardware specific information of these types.
-*/
+struct kgsl_device;
 
-#ifndef __ASM_ARCH_MSM_MEMTYPES_H
-#define __ASM_ARCH_MSM_MEMTYPES_H
+int kgsl_g12_cmdwindow_write(struct kgsl_device *device,
+		enum kgsl_cmdwindow_type target, unsigned int addr,
+		unsigned int data);
 
-#include <mach/memory.h>
-/* Redundant check to prevent this from being included outside of 7x30 */
-#if defined(CONFIG_ARCH_MSM7X30)
-unsigned int get_num_populated_chipselects(void);
-#endif
-
-#endif
+#endif /* _GSL_CMDWINDOW_H */
