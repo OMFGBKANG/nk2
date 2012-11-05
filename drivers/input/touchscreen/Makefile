@@ -56,11 +56,8 @@ obj-$(CONFIG_TOUCHSCREEN_W90X900)	+= w90p910_ts.o
 obj-$(CONFIG_TOUCHSCREEN_TPS6507X)	+= tps6507x-ts.o
 obj-$(CONFIG_TOUCHSCREEN_MSM_LEGACY)		+= msm_touch.o
 obj-$(CONFIG_TOUCHSCREEN_MCS6000)	+= mcs6000_ts.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_TOUCHSCREEN_MCS6000_FIXED)       += fixed-mcs6000.o
 obj-$(CONFIG_TOUCHSCREEN_MCS6000_LGP500)       += lgp500-mcs6000.o
 obj-$(CONFIG_TOUCHSCREEN_MCS8000)	+= mcs8000_ts.o
->>>>>>> cc1b324... Clean up the source.
 obj-$(CONFIG_TOUCHSCREEN_CY8C_TS)	+= cy8c_ts.o
 obj-$(CONFIG_TOUCHSCREEN_CYTTSP_I2C)       += cyttsp-i2c.o
