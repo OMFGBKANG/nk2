@@ -226,7 +226,8 @@ static int conf_choice(struct menu *menu)
 {
 	struct symbol *sym, *def_sym;
 	struct menu *child;
-ool is_new;
+	
+	bool is_new;
 
 	sym = menu->sym;
 	is_new = !sym_has_value(sym);
