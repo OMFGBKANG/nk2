@@ -1928,7 +1928,7 @@ static inline int armv7_pmnc_has_overflowed(unsigned long pmnc)
 static inline int armv7_pmnc_counter_has_overflowed(unsigned long pmnc,
 					enum armv7_counters counter)
 {
-	int ret = 0;
+	int ret;
 
 	if (counter == ARMV7_CYCLE_COUNTER)
 		ret = pmnc & ARMV7_FLAG_C;
