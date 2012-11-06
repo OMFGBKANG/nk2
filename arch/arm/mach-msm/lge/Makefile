@@ -2,6 +2,7 @@ EXTRA_CFLAGS += -Iarch/arm/mach-msm
 obj-$(CONFIG_LGE_HEADSET_2GPIO) += lge_gpio_h2w.o
 obj-$(CONFIG_LGE_SWITCH_GPIO) += lge_gpio_switch.o
 obj-$(CONFIG_LGE_HANDLE_PANIC) += lge_handle_panic.o
+obj-$(CONFIG_LGE_BLUE_ERROR_HANDLER) += lge_errorhandler.o
 obj-$(CONFIG_LGE_PROC_COMM) += lge_proc_comm.o
 obj-$(CONFIG_LGE_SUPPORT_ERS) += lge_ers.o
 obj-$(CONFIG_LGE_SUPPORT_RAPI) += LG_rapi_client.o
@@ -45,6 +46,6 @@ obj-$(CONFIG_LGE_ATS_INPUT_DEVICE) += lge_ats_input.o
 #obj-$(CONFIG_LGE_DIAG_WMC) += lg_diag_wmc.o
 #obj-$(CONFIG_LGE_SUPPORT_AT_CMD) += lge_ats_flex.o # LGE_CHANGE [irene.park@lge.com] 2010-06-04 - to get flex value from ARM9 
 #obj-$(CONFIG_LGE_PWRSINK) += lge_pwrsink.o
-#obj-$(CONFIG_LGE_ATCMD_TTY) += lge_tty_atcmd.o
+obj-$(CONFIG_LGE_ATCMD_TTY) += lge_tty_atcmd.o
 
 obj-$(CONFIG_FORCE_FAST_CHARGE) += fastchg.o

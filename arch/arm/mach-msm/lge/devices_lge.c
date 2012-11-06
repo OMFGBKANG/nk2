@@ -435,7 +435,7 @@ static int __init fb_size_setup(char *p)
 early_param("pmem_fb_size", fb_size_setup);
 // LGE_CHANGE_S [dojip.kim@lge.com] 2010-08-06, lge_mtd_direct_access
 #ifdef CONFIG_MACH_MSM7X27_THUNDERC
-extern void *lge_mtd_direct_access_addr;
+//extern void *lge_mtd_direct_access_addr;
 #endif
 // LGE_CHANGE_E [dojip.kim@lge.com] 2010-08-06
 
@@ -491,7 +491,7 @@ void __init msm_msm7x2x_allocate_memory_regions(void)
 	// LGE_CHANGE_S [dojip.kim@lge.com] 2010-08-06, lge_mtd_direct_access
 #ifdef CONFIG_MACH_MSM7X27_THUNDERC
 	// PAGE_NUM_PER_BLK*PAGE_SIZE_BYTE
-	lge_mtd_direct_access_addr = alloc_bootmem(64*2048);
+//	lge_mtd_direct_access_addr = alloc_bootmem(64*2048);
 #endif
 	// LGE_CHANGE_E [dojip.kim@lge.com] 2010-08-06
 /*
@@ -1022,12 +1022,21 @@ void __init msm_add_usb_devices(void)
 #ifdef CONFIG_USB_MSM_OTG_72K
 	msm_device_otg.dev.platform_data = &msm_otg_pdata;
 /* LGE_CHANGES_S [moses.son@lge.com] 2011-02-09, to avoid compie error  */
+	if (machine_is_msm7x25_surf() || machine_is_msm7x25_ffa()) {
 		msm_otg_pdata.pemp_level =
-			PRE_EMPHASIS_DISABLE;
-		msm_otg_pdata.drv_ampl = HS_DRV_AMPLITUDE_ZERO_PERCENT;
+			PRE_EMPHASIS_WITH_20_PERCENT;
+		msm_otg_pdata.drv_ampl = HS_DRV_AMPLITUDE_5_PERCENT;
+		msm_otg_pdata.cdr_autoreset = CDR_AUTO_RESET_ENABLE;
+		msm_otg_pdata.phy_reset = msm_otg_rpc_phy_reset;
+	}
+	if (machine_is_msm7x27_surf() || machine_is_msm7x27_ffa()) {
+		msm_otg_pdata.pemp_level =
+			PRE_EMPHASIS_WITH_10_PERCENT;
+		msm_otg_pdata.drv_ampl = HS_DRV_AMPLITUDE_5_PERCENT;
 		msm_otg_pdata.cdr_autoreset = CDR_AUTO_RESET_DISABLE;
 		msm_otg_pdata.phy_reset_sig_inverted = 1;
-/* LGE_CHANGES_E [moses.son@lge.com] 2011-02-09 */
+
+	}
 
 #ifdef CONFIG_USB_GADGET
 	msm_otg_pdata.swfi_latency =
