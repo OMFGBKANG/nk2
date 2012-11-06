@@ -211,7 +211,7 @@ char *usb_functions_factory[] = {
 };
 
 /* Mass storage only mode */
-char *usb_functions_lge_mass_storaage_only[] = {
+char *usb_functions_lge_mass_storage_only[] = {
 	"usb_mass_storage",
 };
 
@@ -321,31 +321,7 @@ struct platform_device usb_mass_storage_device = {
 		.platform_data = &mass_storage_pdata,
 	},
 };
-static struct diagcmd_platform_data lg_fw_diagcmd_pdata = {
-	.name = "lg_fw_diagcmd"
-};
 
-static struct platform_device lg_fw_diagcmd_device = {
-	.name = "lg_fw_diagcmd",
-	.id = -1,
-	.dev    = {
-		.platform_data = &lg_fw_diagcmd_pdata
-	},
-};
-
-static struct platform_device lg_diag_cmd_device = {
-	.name = "lg_diag_cmd",
-	.id = -1,
-	.dev    = {
-		.platform_data = 0, //&lg_diag_cmd_pdata
-	},
-};
-
-// LGE_CHANGE [dojip.kim@lge.com] 2010-09-28
-static struct platform_device testmode_device = {
-	.name = "testmode",
-	.id = -1,
-};
 
 struct usb_ether_platform_data rndis_pdata = {
 	/* ethaddr is filled by board_serialno_setup */
@@ -445,10 +421,6 @@ static struct platform_device *devices[] __initdata = {
 	&msm_device_uart_dm1,
 	&msm_device_snd,
 	&msm_device_adspdec,
-	&lg_fw_diagcmd_device,
-	&lg_diag_cmd_device,
-	// LGE_CHANGE [dojip.kim@lge.com] 2010-09-28
-	&testmode_device,
 };
 
 extern struct sys_timer msm_timer;

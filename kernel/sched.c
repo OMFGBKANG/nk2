@@ -78,9 +78,15 @@
 #include <asm/irq_regs.h>
 
 #include "sched_cpupri.h"
+#include "sched_autogroup.h"
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/sched.h>
+#ifdef CONFIG_LGE_BLUE_ERROR_HANDLER
+/*LGE_CHANGE_S [bluerti@lge.com] 2010-04-01 <For Error Handler>*/
+extern int LG_ErrorHandler_enable ;
+/*LGE_CHANGE_E [bluerti@lge.com] 2010-04-01 <For Error Handler>*/
+#endif
 
 /*
  * Convert user-nice values [ -20 ... 0 ... 19 ]
@@ -268,6 +274,10 @@ struct task_group {
 	struct task_group *parent;
 	struct list_head siblings;
 	struct list_head children;
+
+#ifdef CONFIG_SCHED_AUTOGROUP
+	struct autogroup *autogroup;
+#endif
 };
 
 #define root_task_group init_task_group
@@ -616,11 +626,14 @@ static inline int cpu_of(struct rq *rq)
  */
 static inline struct task_group *task_group(struct task_struct *p)
 {
+	struct task_group *tg;
 	struct cgroup_subsys_state *css;
 
 	css = task_subsys_state_check(p, cpu_cgroup_subsys_id,
 			lockdep_is_held(&task_rq(p)->lock));
-	return container_of(css, struct task_group, css);
+	tg = container_of(css, struct task_group, css);
+
+	return autogroup_task_group(p, tg);
 }
 
 /* Change a task's cfs_rq and parent entity if it moves across CPUs/groups */
@@ -738,7 +751,7 @@ sched_feat_write(struct file *filp, const char __user *ubuf,
 		size_t cnt, loff_t *ppos)
 {
 	char buf[64];
-	char *cmp = buf;
+	char *cmp;
 	int neg = 0;
 	int i;
 
@@ -749,6 +762,7 @@ sched_feat_write(struct file *filp, const char __user *ubuf,
 		return -EFAULT;
 
 	buf[cnt] = 0;
+	cmp = strstrip(buf);
 
 	if (strncmp(buf, "NO_", 3) == 0) {
 		neg = 1;
@@ -756,9 +770,7 @@ sched_feat_write(struct file *filp, const char __user *ubuf,
 	}
 
 	for (i = 0; sched_feat_names[i]; i++) {
-		int len = strlen(sched_feat_names[i]);
-
-		if (strncmp(cmp, sched_feat_names[i], len) == 0) {
+		if (strcmp(cmp, sched_feat_names[i]) == 0) {
 			if (neg)
 				sysctl_sched_features &= ~(1UL << i);
 			else
@@ -1939,12 +1951,6 @@ static void dec_nr_running(struct rq *rq)
 
 static void set_load_weight(struct task_struct *p)
 {
-	if (task_has_rt_policy(p)) {
-		p->se.load.weight = 0;
-		p->se.load.inv_weight = WMULT_CONST;
-		return;
-	}
-
 	/*
 	 * SCHED_IDLE tasks get minimal weight:
 	 */
@@ -2001,6 +2007,7 @@ static void deactivate_task(struct rq *rq, struct task_struct *p, int flags)
 #include "sched_idletask.c"
 #include "sched_fair.c"
 #include "sched_rt.c"
+#include "sched_autogroup.c"
 #ifdef CONFIG_SCHED_DEBUG
 # include "sched_debug.c"
 #endif
@@ -2936,6 +2943,7 @@ unsigned long nr_running(void)
 
 	return sum;
 }
+EXPORT_SYMBOL_GPL(nr_running);
 
 unsigned long nr_uninterruptible(void)
 {
@@ -4204,6 +4212,16 @@ do_wait_for_common(struct completion *x, long timeout, int state, int iowait)
 static long __sched
 wait_for_common(struct completion *x, long timeout, int state, int iowait)
 {
+#ifdef CONFIG_LGE_BLUE_ERROR_HANDLER
+/*LGE_CHANGE_S [bluerti@lge.com] 2010-04-01 <For Error Handler>*/
+	if (LG_ErrorHandler_enable) {
+		int i;
+		for(i=0; i<0x10000;i++) 
+			;
+		return 0;
+	}
+/*LGE_CHANGE_E [bluerti@lge.com] 2010-04-01 <For Error Handler>*/
+#endif
 	might_sleep();
 
 	spin_lock_irq(&x->wait.lock);
@@ -5423,7 +5441,19 @@ void __cpuinit init_idle(struct task_struct *idle, int cpu)
 	idle->se.exec_start = sched_clock();
 
 	cpumask_copy(&idle->cpus_allowed, cpumask_of(cpu));
+	/*
+	 * We're having a chicken and egg problem, even though we are
+	 * holding rq->lock, the cpu isn't yet set to this cpu so the
+	 * lockdep check in task_group() will fail.
+	 *
+	 * Similar case to sched_fork(). / Alternatively we could
+	 * use task_rq_lock() here and obtain the other rq->lock.
+	 *
+	 * Silence PROVE_RCU
+	 */
+	rcu_read_lock();
 	__set_task_cpu(idle, cpu);
+	rcu_read_unlock();
 
 	rq->curr = rq->idle = idle;
 #if defined(CONFIG_SMP) && defined(__ARCH_WANT_UNLOCKED_CTXSW)
@@ -7365,6 +7395,60 @@ static int dattrs_equal(struct sched_domain_attr *cur, int idx_cur,
 			sizeof(struct sched_domain_attr));
 }
 
+#ifdef CONFIG_MSM_SCHED_FAST_CPU_ONLINE
+void fast_sched_domains_update(int cpu)
+{
+	struct s_data d;
+	struct sched_domain *sd;
+	struct cpumask *cpu_map = doms_cur[0];
+	int i;
+
+	mutex_lock(&sched_domains_mutex);
+
+	unregister_sched_domain_sysctl();
+
+	if (!alloc_cpumask_var(&d.nodemask, GFP_KERNEL))
+		goto skip;
+	if (!alloc_cpumask_var(&d.send_covered, GFP_KERNEL)) {
+		free_cpumask_var(d.nodemask);
+		goto skip;
+	}
+	d.rd = alloc_rootdomain();
+	if (!d.rd) {
+		free_cpumask_var(d.nodemask);
+		free_cpumask_var(d.send_covered);
+		goto skip;
+	}
+
+	cpumask_andnot(cpu_map, cpu_active_mask, cpu_isolated_map);
+
+	for_each_cpu(i, cpu_map) {
+		cpumask_and(d.nodemask,
+			cpumask_of_node(cpu_to_node(i)), cpu_map);
+		sd = __build_cpu_sched_domain(&d, cpu_map, NULL, NULL, i);
+	}
+
+	build_sched_groups(&d, SD_LV_CPU, cpu_map, 0);
+	for_each_cpu(i, cpu_map) {
+		sd = &per_cpu(phys_domains, i).sd;
+		init_sched_groups_power(i, sd);
+	}
+
+	for_each_cpu(i, cpu_map) {
+		sd = &per_cpu(phys_domains, i).sd;
+		cpu_attach_domain(sd, d.rd, i);
+	}
+
+	free_cpumask_var(d.nodemask);
+	free_cpumask_var(d.send_covered);
+
+skip:
+	register_sched_domain_sysctl();
+
+	mutex_unlock(&sched_domains_mutex);
+}
+#endif
+
 /*
  * Partition sched domains as specified by the 'ndoms_new'
  * cpumasks in the array doms_new[] of cpumasks. This compares
@@ -7558,6 +7642,14 @@ static int update_sched_domains(struct notifier_block *nfb,
 	switch (action) {
 	case CPU_ONLINE:
 	case CPU_ONLINE_FROZEN:
+#ifdef CONFIG_MSM_SCHED_FAST_CPU_ONLINE
+		/* Fast scheduler domain update for MSM8X60 CPU1 */
+		if (doms_cur == &fallback_doms) {
+			/* Add CPU 1 to existing scheduler domain */
+			fast_sched_domains_update(1);
+			return NOTIFY_OK;
+		}
+#endif
 	case CPU_DOWN_PREPARE:
 	case CPU_DOWN_PREPARE_FROZEN:
 	case CPU_DOWN_FAILED:
@@ -7809,7 +7901,7 @@ void __init sched_init(void)
 #ifdef CONFIG_CGROUP_SCHED
 	list_add(&init_task_group.list, &task_groups);
 	INIT_LIST_HEAD(&init_task_group.children);
-
+	autogroup_init(&init_task);
 #endif /* CONFIG_CGROUP_SCHED */
 
 #if defined CONFIG_FAIR_GROUP_SCHED && defined CONFIG_SMP

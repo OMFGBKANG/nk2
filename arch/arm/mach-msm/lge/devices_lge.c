@@ -24,6 +24,7 @@
 #include <linux/bootmem.h>
 #include <asm/setup.h>
 #include <asm/mach/mmc.h>
+#include <asm/mach-types.h>
 #include <mach/vreg.h>
 #include <mach/mpp.h>
 #include <mach/board.h>
@@ -56,10 +57,7 @@
 /* setting board revision information */
 int lge_bd_rev;
 
-/* LGE_CHANGE_S [james.jang@lge.com] 2010-07-06, only LS670 */
-#if 0
-static char *rev_str[LGE_REV_TOT_NUM] =
-{ "evb", "rev_a", "rev_b", "rev_c", "rev_d", "rev_e", "rev_10"};
+
 
 static int __init board_revno_setup(char *rev_info)
 {
@@ -78,83 +76,7 @@ static int __init board_revno_setup(char *rev_info)
 
 	return 1;
 }
-#else
-/*
-    PCB_REVISION_UNKOWN = 0,
-    PCB_REVISION_A = 1,
-    PCB_REVISION_B = 2,
-    PCB_REVISION_C = 3,
-    PCB_REVISION_D = 4,
-    PCB_REVISION_E = 5,
-    PCB_REVISION_F= 6,
-    PCB_REVISION_G = 7,
-    PCB_REVISION_1P0 = 8,
-    PCB_REVISION_1P1 = 9,
-    PCB_REVISION_1P2 = 10,
-    PCB_REVISION_1P3 = 11,
-    PCB_REVISION_1P4 = 12,
-    PCB_REVISION_1P5 = 13,
-    PCB_REVISION_1P7 = 14,
-*/
-static int __init board_revno_setup(char *rev_info)
-{
-	char pcb_version[10];
-	
-	lge_bd_rev = (int)simple_strtol(rev_info, NULL, 10);
 
-	switch(lge_bd_rev)			
-	{
-		case HW_PCB_REV_A: 				
-			strcpy(pcb_version, "A");
-			break;
-		case HW_PCB_REV_B: 
-			strcpy(pcb_version, "B");
-		    break;
-		case HW_PCB_REV_C: 	
-			strcpy(pcb_version, "C");
-			 break;
-		case HW_PCB_REV_D: 
-			strcpy(pcb_version, "D");
-			 break;
-		case HW_PCB_REV_E: 	
-			strcpy(pcb_version, "E");
-			 break;
-		case HW_PCB_REV_F:
-			strcpy(pcb_version, "F");
-			 break;
-		case HW_PCB_REV_G:
-			strcpy(pcb_version, "G");
-			 break;
-		case HW_PCB_REV_10:
-			strcpy(pcb_version, "1.0");
-			 break;
-		case HW_PCB_REV_11:	
-			strcpy(pcb_version, "1.1");
-			 break;
-		case HW_PCB_REV_12:
-			strcpy(pcb_version, "1.2");
-			 break;
-		case HW_PCB_REV_13:
-			strcpy(pcb_version, "1.3");
-			 break;
-		case HW_PCB_REV_14:	
-			strcpy(pcb_version, "1.4");
-			 break;
-		case HW_PCB_REV_15:	
-			strcpy(pcb_version, "1.5");
-			 break;
-		case HW_PCB_REV_16:	
-			strcpy(pcb_version, "1.6");
-			 break;
-		default:	
-			strcpy(pcb_version, "Unknown");
-			 break;
-	}
-	printk(KERN_INFO"BOARD: H/W revision = %s\n", pcb_version);
-  return 1;
-}
-#endif
-/* LGE_CHANGE_E [james.jang@lge.com] 2010-07-06 */
 
 __setup("lge.rev=", board_revno_setup);
 
@@ -248,7 +170,7 @@ static int msm_fb_detect_panel(const char *name)
 #ifdef CONFIG_MACH_MSM7X27_ALESSI
 		if (!strcmp(name, "mddi_sharp_hvga_e720"))
 #else
-#		if (!strcmp(name, "lcdc_gordon_vga"))
+//		if (!strcmp(name, "lcdc_gordon_vga"))
 #endif
 			ret = 0;
 		else
@@ -432,7 +354,7 @@ static struct android_pmem_platform_data android_pmem_pdata = {
 static struct android_pmem_platform_data android_pmem_adsp_pdata = {
 	.name = "pmem_adsp",
 	.allocator_type = PMEM_ALLOCATORTYPE_BITMAP,
-	.cached = 0,
+	.cached = 1,
 };
 
 static struct android_pmem_platform_data android_pmem_audio_pdata = {
@@ -582,7 +504,7 @@ void __init msm_msm7x2x_allocate_memory_regions(void)
 			size, addr, __pa(addr));
 #endif
 */
->>>>>>> f604f71... thunderg: Add Support for ICS (1/2).
+
 }
 
 void __init msm_add_pmem_devices(void)
@@ -799,6 +721,27 @@ __WEAK struct platform_device acm_device = {
 };
 #endif
 
+#ifdef CONFIG_USB_SUPPORT_LGE_ANDROID_AUTORUN
+/* LGE_CHANGE
+ * Add platform data and device for cdrom storage function.
+ * It will be used in Autorun feature.
+ * 2011-03-02, hyunhui.park@lge.com
+ */
+__WEAK struct usb_cdrom_storage_platform_data cdrom_storage_pdata = {
+	.nluns		= 1,
+	.vendor		= "Qualcomm Incorporated",
+	.product    = "CDROM storage",
+	.release	= 0x0100,
+};
+
+__WEAK struct platform_device usb_cdrom_storage_device = {
+	.name	= "usb_cdrom_storage",
+	.id	= -1,
+	.dev	= {
+		.platform_data = &cdrom_storage_pdata,
+	},
+};
+#endif
 __WEAK struct android_usb_platform_data android_usb_pdata = {
 	.vendor_id	= 0x05C6,
 	.product_id	= 0x9026,
@@ -931,7 +874,10 @@ static int hsusb_rpc_connect(int connect)
 		return msm_hsusb_rpc_close();
 }
 
-#if 0
+#endif
+
+
+#ifdef CONFIG_USB_MSM_OTG_72K
 struct vreg *vreg_3p3;
 static int msm_hsusb_ldo_init(int init)
 {
@@ -955,26 +901,7 @@ static int msm_hsusb_ldo_init(int init)
 	return 0;
 }
 
-static int msm_hsusb_ldo_enable(int enable)
-{
-	static int ldo_status;
 
-	if (!vreg_3p3 || IS_ERR(vreg_3p3))
-		return -ENODEV;
-
-	if (ldo_status == enable)
-		return 0;
-
-	ldo_status = enable;
-
-	pr_info("%s: %d", __func__, enable);
-
-	if (enable)
-		return vreg_enable(vreg_3p3);
-
-	return vreg_disable(vreg_3p3);
-}
-#endif
 
 static int msm_hsusb_pmic_notif_init(void (*callback)(int online), int init)
 {
@@ -989,15 +916,15 @@ static int msm_hsusb_pmic_notif_init(void (*callback)(int online), int init)
 	return ret;
 }
 
-#if 0
+//#if 0
 static int msm_otg_rpc_phy_reset(void __iomem *regs)
 {
 	return msm_hsusb_phy_reset();
 }
-#endif
+//#endif
 static struct msm_otg_platform_data msm_otg_pdata = {
 	.rpc_connect    	= hsusb_rpc_connect,
-#if 0
+//#if 0
 #ifdef CONFIG_ARCH_MSM7X27
 	/* LGE_CHANGE
 	 * To reset USB LDO, use RPC(only msm7x27).
@@ -1005,7 +932,7 @@ static struct msm_otg_platform_data msm_otg_pdata = {
 	 */
 	.phy_reset			= msm_otg_rpc_phy_reset,
 #endif
-#endif
+//#endif
 	.pmic_vbus_notif_init	= msm_hsusb_pmic_notif_init,
 	.chg_vbus_draw      = hsusb_chg_vbus_draw,
 	.chg_connected      = hsusb_chg_connected,
@@ -1015,6 +942,7 @@ static struct msm_otg_platform_data msm_otg_pdata = {
 #endif
 //	.ldo_init		= msm_hsusb_ldo_init,				// moses.son@lge.com USB don't need to control ldo.
 //	.ldo_enable     = msm_hsusb_ldo_enable,
+    .ldo_init       = msm_hsusb_ldo_init,
 	.pclk_required_during_lpm = 1,
 	.pclk_src_name		= "ebi1_usb_clk",
 	
@@ -1054,12 +982,35 @@ static struct platform_device *usb_devices[] __initdata = {
 #ifdef CONFIG_USB_ANDROID_DIAG
 	&usb_diag_device,
 #endif
+#ifdef CONFIG_USB_SUPPORT_LGE_ANDROID_AUTORUN
+	/* LGE_CHANGE
+	 * Add platform data and device for cdrom storage function.
+	 * It will be used in Autorun feature.
+	 * 2011-03-02, hyunhui.park@lge.com
+	 */
+	&usb_cdrom_storage_device,
+#endif
 	&android_usb_device,
 #endif
 };
 
+static void usb_mpp_init(void)
+{
+	unsigned rc;
+	unsigned mpp_usb = 7;
+
+	if (machine_is_msm7x25_ffa() || machine_is_msm7x27_ffa()) {
+		rc = mpp_config_digital_out(mpp_usb,
+				MPP_CFG(MPP_DLOGIC_LVL_VDD,
+					MPP_DLOGIC_OUT_CTRL_HIGH));
+		if (rc)
+			pr_err("%s: configuring mpp pin"
+					"to enable 3.3V LDO failed\n", __func__);
+	}
+}
 void __init msm_add_usb_devices(void) 
 {
+      usb_mpp_init();
 #ifdef CONFIG_USB_FUNCTION
 	msm_hsusb_pdata.swfi_latency =
 		msm7x27_pm_data
@@ -1156,7 +1107,7 @@ void __init msm_device_i2c_init(void)
 
 	msm_device_i2c.dev.platform_data = &msm_i2c_pdata;
 }
-#if 0 //pranav.s
+//#if 0 //pranav.s
 /* TSIF begin */
 #if defined(CONFIG_TSIF) || defined(CONFIG_TSIF_MODULE)
 
@@ -1186,7 +1137,7 @@ void __init lge_add_tsif_devices(void)
 	platform_device_register(&msm_device_tsif);
 }
 #endif /* defined(CONFIG_TSIF) || defined(CONFIG_TSIF_MODULE) */
-#endif //pranav.s
+//#endif //pranav.s
 /* lge gpio i2c device */
 #define MAX_GPIO_I2C_DEV_NUM	10
 #define LOWEST_GPIO_I2C_BUS_NUM	2
