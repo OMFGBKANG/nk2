@@ -43,7 +43,8 @@ typedef enum
   MTC_KEY_EVENT_REQ_CMD			= 0x03, /* Key Event Request Cmd */
   MTC_TOUCH_REQ_CMD				= 0x04,
 // LG_FW : 2010.01.06 hoonylove004 -------------------------------------------
-#if defined (CONFIG_MACH_MSM7X27_THUNDERC) || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
+#if defined (CONFIG_MACH_MSM7X27_ALOHAV) || defined (CONFIG_MACH_MSM7X27_THUNDERC) \
+  || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
   MTC_LOGGING_MASK_REQ_CMD		= 0x07,
   MTC_LOG_REQ_CMD 					= 0x08,
 #endif /*LG_FW_ATS_ETA_MTC_KEY_LOGGING*/
@@ -150,7 +151,8 @@ typedef struct
   unsigned short y;
 } PACKED mtc_touch_req_type;
 
-#if defined (CONFIG_MACH_MSM7X27_THUNDERC) || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
+#if defined (CONFIG_MACH_MSM7X27_ALOHAV) || defined (CONFIG_MACH_MSM7X27_THUNDERC) \
+  || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
 typedef struct
 {
   mtc_req_hdr_type hdr;
@@ -180,7 +182,8 @@ typedef union
   mtc_capture_req_type capture;
   mtc_key_req_type key;	
   mtc_touch_req_type touch;
-#if defined (CONFIG_MACH_MSM7X27_THUNDERC) || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
+#if defined (CONFIG_MACH_MSM7X27_ALOHAV) || defined (CONFIG_MACH_MSM7X27_THUNDERC) \
+  || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
   mtc_log_req_type log;
 #endif /*LG_FW_ATS_ETA_MTC_KEY_LOGGING*/
   mtc_serialized_data_req_type serial_data;
@@ -234,10 +237,13 @@ typedef struct
   unsigned short bmp_height;
   mtc_bits_pixel_type bits_pixel;
   mtc_mask_type mask;
-  unsigned char bmp_data[MTC_SCRN_BUF_SIZE_MAX];
+  /* LGE_CHANGE [dojip.kim@lge.com] 2010-06-04, dynamic alloc */
+  //unsigned char bmp_data[MTC_SCRN_BUF_SIZE_MAX];
+  unsigned char bmp_data[0];
 } PACKED mtc_capture_rsp_type;
 
-#if defined (CONFIG_MACH_MSM7X27_THUNDERC) || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
+#if defined (CONFIG_MACH_MSM7X27_ALOHAV) || defined (CONFIG_MACH_MSM7X27_THUNDERC) \
+  || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
 typedef struct
 {
   unsigned long long time; /*timestamp in milliseconds*/
@@ -342,8 +348,24 @@ typedef struct
   unsigned char which_procesor;             // to choose which processor will do act.
 }mtc_user_table_entry_type;
 
-/* LGE_CHANGE_S [jihoon.lee@lge.com] 2010-02-03, LG_FW_ATS_ETA_MTC_KEY_LOGGING */
-#if defined (CONFIG_MACH_MSM7X27_THUNDERC) || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
+#if 1 //LG_FW_MTC_GISELE
+typedef struct ext_message{
+	byte cmd_code ;
+	byte ts_type;
+	byte num_args;
+	byte drop_cnt;
+	dword time[2];
+	word line_number;
+	word ss_id;
+	//word ss_mask;
+	dword ss_mask;
+	dword args[2];
+	char code[13];
+	char file_name[13];
+} PACKED ext_msg_type;
+#endif //LG_FW_MTC_GISELE
+
+#if defined (CONFIG_MACH_MSM7X27_ALOHAV) || defined (CONFIG_MACH_MSM7X27_THUNDERC) || defined (LG_FW_ATS_ETA_MTC_KEY_LOGGING)
 struct ats_mtc_key_log_type{
 	unsigned char log_id;
 	unsigned short log_len;
@@ -365,5 +387,5 @@ enum ats_mtc_key_log_id_type{
                       INTERNAL FUNCTION DEFINITIONS
 
 ===========================================================================*/
-
+extern void mtc_send_key_log_data(struct ats_mtc_key_log_type *p_ats_mtc_key_log);
 #endif /* DIAGMTC_H */

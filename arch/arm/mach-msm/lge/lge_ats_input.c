@@ -2,19 +2,19 @@
  *  arch/arm/mach-msm/lge/lge_ats_input.c
  *
  *  Copyright (c) 2010 LGE.
- *  
+ *
  *  All source code in this file is licensed under the following license
  *  except where indicated.
- *  
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  version 2 as published by the Free Software Foundation.
- *  
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *  See the GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, you can find it at http://www.fsf.org
  */
@@ -46,10 +46,11 @@ static int  __init ats_input_probe(struct platform_device *pdev)
 
 	for(i=0; i<EV_CNT; i++)
 		set_bit(i, ats_input_dev->evbit);
-	for(i=0; i<KEY_CNT; i++)
-		set_bit(i, ats_input_dev->keybit);
 	set_bit(ABS_MT_TOUCH_MAJOR, ats_input_dev->absbit);
 	clear_bit(EV_REP, ats_input_dev->evbit);
+
+	/* We are NOT a QWERTY keyboard */
+	clear_bit(EV_KEY, ats_input_dev->evbit);
 
 	rc = input_register_device(ats_input_dev);
 	if (rc)
@@ -68,17 +69,18 @@ static int ats_input_remove(struct platform_device *pdev)
 	return 0;
 }
 
-static struct platform_driver __refdata ats_input_driver = {
+static struct platform_driver ats_input_driver __refdata = {
 	.driver = {
 		.name = DRIVER_NAME,
 		.owner = THIS_MODULE,
 	},
+	.probe	 = ats_input_probe,
 	.remove = ats_input_remove,
 };
 
 static int __init ats_input_init(void)
 {
-	return platform_drvier_probe(&ats_input_driver, ats_input_probe);
+	return platform_driver_register(&ats_input_driver);
 }
 
 

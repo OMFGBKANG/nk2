@@ -285,6 +285,7 @@ static int __devexit ers_remove(struct platform_device *pdev)
 }
 
 static struct platform_driver ers_driver = {
+	.probe = ers_probe,
 	.remove = __devexit_p(ers_remove),
 	.driver = {
 		.name = ERS_DRIVER_NAME,
@@ -294,15 +295,14 @@ static struct platform_driver ers_driver = {
 
 static int __init ers_init(void)
 {
-	return platform_driver_probe(&ers_driver, ers_probe);
+	return platform_driver_register(&ers_driver);
 }
+module_init(ers_init);
 
 static void __exit ers_exit(void)
 {
 	platform_driver_unregister(&ers_driver);
 }
-
-module_init(ers_init);
 module_exit(ers_exit);
 
 MODULE_DESCRIPTION("Exception Reporting System Driver");

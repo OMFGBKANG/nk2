@@ -44,10 +44,11 @@
 #endif
 
 #ifdef CONFIG_ARCH_MSM7X27
-#define MSM_PMEM_MDP_SIZE	0x1B76000
+#define MSM_PMEM_MDP_SIZE	0x1000000
 #define MSM_PMEM_ADSP_SIZE	0xB71000
 #define MSM_PMEM_AUDIO_SIZE	0x5B000
-#define MSM_FB_SIZE		0x177000
+#define MSM_FB_SIZE		0x200000
+
 #define PMEM_KERNEL_EBI1_SIZE	0x1C000
 
 /* Using lower 1MB of OEMSBL memory for GPU_PHYS */
@@ -58,8 +59,8 @@
 #define MSM_PMEM_AUDIO_START_ADDR	0x80000ul
 
 /* TA charger */
-#define GISELE_TA_CHG_CURRENT	600
-#define GISELE_USB_CHG_CURRENT	400
+#define LS670_TA_CHG_CURRENT	700
+#define LS670_USB_CHG_CURRENT	400
 
 #ifdef CONFIG_MACH_MSM7X27_MUSCAT
 /* I dont know why I allocate bigger than real lcd size in muscat , because EBI2 interface? */
@@ -128,6 +129,7 @@ struct touch_platform_data {
 #endif
 // [LGE PATCH : END] edward1.kim@lge.com 20110214
 //LGE_DEV_PORTING UNIVA_E  
+
 /* pp2106 qwerty platform data */
 struct pp2106_platform_data {
 	unsigned int reset_pin;
@@ -205,6 +207,7 @@ struct k3dh_platform_data {
 	int (*power_off)(void);
 	int (*gpio_config)(int config);
 };
+
 
 struct kr3dh_platform_data {
 	int poll_interval;
@@ -299,6 +302,7 @@ struct aat28xx_platform_data {
 	unsigned int mode;		     /* initial mode */
 	int max_current;			 /* led max current(0-7F) */
 	int initialized;			 /* flag which initialize on system boot */
+
 	int version;				 /* Chip version number */
 };
 int aat28xx_ldo_enable(struct device *dev, unsigned num, unsigned enable);
@@ -413,10 +417,13 @@ enum {
 	REBOOT_KEY_PRESS = 0,
 	REBOOT_KEY_NOT_PRESS,
 };
+
 extern int hidden_reset_enable;
+
 extern int on_hidden_reset;
 void *lge_get_fb_addr(void);
 void *lge_get_fb_copy_phys_addr(void);
+
 void *lge_get_fb_copy_virt_addr(void);
 
 struct lge_panic_handler_platform_data {
@@ -445,6 +452,8 @@ unsigned lge_get_nv_qem(void);
 
 #define CAMERA_POWER_ON				0
 #define CAMERA_POWER_OFF			1
+int camera_status(void);
+
 
 typedef void (gpio_i2c_init_func_t)(int bus_num);
 int __init init_gpio_i2c_pin(struct i2c_gpio_platform_data *i2c_adap_pdata,

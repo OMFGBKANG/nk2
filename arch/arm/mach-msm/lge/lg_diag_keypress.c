@@ -12,6 +12,7 @@ enum {
 	GPIO_SLIDE_OPEN,
 };
 */
+#if 0
 #define KEY_TRANS_MAP_SIZE 70
 typedef struct {
 	  word LG_common_key_code;
@@ -78,11 +79,11 @@ unsigned int LGF_KeycodeTrans(word input)
 
   return ret;
 }
-
+#endif
 /* ==========================================================================
 ===========================================================================*/
 extern PACK(void *) diagpkt_alloc (diagpkt_cmd_code_type code, unsigned int length);
-//extern unsigned int LGF_KeycodeTrans(word input);
+extern unsigned int LGF_KeycodeTrans(word input);
 extern void Send_Touch( unsigned int x, unsigned int y);
 /*==========================================================================*/
 
@@ -90,8 +91,12 @@ static unsigned saveKeycode =0 ;
 
 void SendKey(unsigned int keycode, unsigned char bHold)
 {
+  struct input_dev *idev = NULL;
+  
+#ifdef  CONFIG_LGE_ATS_INPUT_DEVICE
   extern struct input_dev *get_ats_input_dev(void);
-  struct input_dev *idev = get_ats_input_dev();
+  idev = get_ats_input_dev();
+#endif
 
   if( keycode != HS_RELEASE_K)
     input_report_key( idev,keycode , 1 ); // press event

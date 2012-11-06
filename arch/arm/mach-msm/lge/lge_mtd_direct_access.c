@@ -20,25 +20,35 @@
 #include <linux/err.h>
 #include <linux/mtd/mtd.h>
 #include <linux/sched.h>
+// LGE_CHANGE [dojip.kim@lge.com] 2010-08-23, do something after cold boot
+#include "lg_fw_diag_communication.h"
 
 #include <linux/slab.h>
-//#if defined(CONFIG_MACH_MSM7X27_THUNDERC)
-#if 1
-#define MISC_PART_NUM 6
+#if defined(CONFIG_MACH_MSM7X27_THUNDERC)
+/* LGE_CHANGE [james.jang@lge.com] 2010-07-20, for FOTA_STO */
+//#define MISC_PART_NUM 6
+#define MISC_PART_NUM 7
 #define MISC_PART_SIZE 4
-#define PERSIST_PART_NUM 7
+/* LGE_CHANGE [james.jang@lge.com] 2010-07-20, for FOTA_STO */
+//#define PERSIST_PART_NUM 7
+#define PERSIST_PART_NUM 8
 #define PERSIST_PART_SIZE 12
-#define PAGE_NUM_PER_BLK 64
-#define PAGE_SIZE_BYTE 2048
+// LGE_CHANGE_S [dojip.kim@lge.com] 2010-08-06, size is hard coded
+//#define PAGE_NUM_PER_BLK 64
+//#define PAGE_SIZE_BYTE 2048
+// LGE_CHANGE_E [dojip.kim@lge.com] 2010-08-06
 #else
 #define MISC_PART_NUM	4
 #endif
 
 static struct mtd_info *mtd;
 
-// kthread_lg_diag: page allocation failure. order:5, mode:0xd0, lge_init_mtd_access: error: cannot allocate memory
-//static unsigned char *global_buf;
-static unsigned char global_buf[PAGE_NUM_PER_BLK*PAGE_SIZE_BYTE];
+// LGE_CHANGE [dojip.kim@lge.com] 2010-08-06, allocated memory via bootmem in devices.lge.c
+// kthread_lg_diag: page allocation failure. order:5, mode:0xd0, 
+// lge_init_mtd_access: error: cannot allocate memory
+void *lge_mtd_direct_access_addr;
+static unsigned char *global_buf;
+//static unsigned char global_buf[PAGE_NUM_PER_BLK*PAGE_SIZE_BYTE];
 static unsigned char *bbt;
 
 static int pgsize;
@@ -57,12 +67,18 @@ int init_mtd_access(int partition, int block);
 
 static int dev;
 static int target_block;
-static int dummy_arg;
+static int dummy_arg = 0;
+/* LGE_CHANGE [sm.shim@lge.com] 2010-08-22, merge First Boot Complete Test from VS660 */
 int boot_info = 0;
 
 module_param(dev, int, S_IRUGO);
 module_param(target_block, int, S_IRUGO);
-module_param(boot_info, int, S_IWUSR | S_IRUGO);
+#if 1 //LGSI_CHANGE_START[panchaxari.t@lge.com] // for cts test failure case
+module_param(boot_info, int, S_IWUSR | S_IRUGO); 
+#endif //LGSI_CHANGE_END[panchaxari.t@lge.com] // for cts test failure case
+/* LGE_CHANGE [sm.shim@lge.com] 2010-08-22, merge First Boot Complete Test from VS660 */
+//module_param(boot_info, int, 0664); // enabled for CTS permission failure
+
 
 static int test_init(void)
 {
@@ -73,23 +89,22 @@ static int test_init(void)
 }
 
 static int test_erase_block(void)
+/* LGE_CHANGE_E [sm.shim@lge.com] 2010-08-22, merge First Boot Complete Test from VS660 */
 {
-	int normal_block_seq = 0;
 	int i;
 	int err;
 
 	/* Erase eraseblock */
 	printk(KERN_INFO"%s: erasing block\n", __func__);
 
-	for (i = 0; i < ebcnt; ++i) {
+	for (i = 0; i < ebcnt; i++) {
 		if (bbt[i])
 			continue;
-		if (i == target_block)
+		else
 			break;
-		normal_block_seq++;
 	}
 
-	err = lge_erase_block(normal_block_seq);
+	err = lge_erase_block(i);
 	if (err) {
 		printk(KERN_INFO"%s: erased %u block fail\n", __func__, i);
 		return err;
@@ -99,35 +114,41 @@ static int test_erase_block(void)
 
 	return 0;
 }
+/* LGE_CHANGE [sm.shim@lge.com] 2010-08-22, merge First Boot Complete Test from VS660 */
 static int test_write_block(const char *val, struct kernel_param *kp)
 {
 	int i;
 	int err;
-	int normal_block_seq = 0;
+/* LGE_CHANGE_S [sm.shim@lge.com] 2010-08-22, merge First Boot Complete Test from VS660 */
 	unsigned char *test_string;
 	unsigned long flag=0;
+	// LGE_CHANGE [dojip.kim@lge.com] 2010-08-23, do something after cold boot
+	struct diagcmd_dev *diagpdev;
 
 	flag = simple_strtoul(val,NULL,10);
-	if(flag==5)
+	if(5 == flag)
 		test_string="FACT_RESET_5";
-	else if(flag==6)
+	else if(6 == flag)
 		test_string="FACT_RESET_6";
+	// LGE_CHANGE [dojip.kim@lge.com] 2010-09-04, for RTN and Factory reset
+	else if (3 == flag)
+		test_string="FACT_RESET_3";
 	else
 		return -1;
 
 	test_init();
 	test_erase_block();
-	printk(KERN_INFO"%s: writing block: flag = %ld\n", __func__,flag);
+	printk(KERN_INFO"%s: writing block: flag = %lu\n", __func__, flag);
+/* LGE_CHANGE_E [sm.shim@lge.com] 2010-08-22, merge First Boot Complete Test from VS660 */
 
-	for (i = 0; i < ebcnt; ++i) {
+	for (i = 0; i < ebcnt; i++) {
 		if (bbt[i])
 			continue;
-		if (i == target_block)
+		else
 			break;
-		normal_block_seq++;
 	}
 
-	err = lge_write_block(normal_block_seq, test_string, strlen(test_string));
+	err = lge_write_block(i, test_string, strlen(test_string));
 	if (err) {
 		printk(KERN_INFO"%s: write %u block fail\n", __func__, i);
 		return err;
@@ -135,32 +156,43 @@ static int test_write_block(const char *val, struct kernel_param *kp)
 
 	printk(KERN_INFO"%s: write %u block\n", __func__, i);
 
+	// LGE_CHANGE [dojip.kim@lge.com] 2010-08-23, do something after cold boot
+	if (flag == 5) {
+		diagpdev = diagcmd_get_dev();	
+		if (diagpdev != NULL) {
+			update_diagcmd_state(diagpdev, "ADBSET", 0);
+		}
+	}
+
 	return 0;
 }
-module_param_call(write_block, test_write_block, param_get_bool, &dummy_arg,S_IWUSR | S_IRUGO);
+//LGSI_CHANGE_START[panchaxari.t@lge.com] for CTS failure
+module_param_call(write_block, test_write_block, param_get_bool, &dummy_arg, S_IWUSR | S_IRUGO);
+//Suresh for Factory Reset and CTS
+module_param_call(write_block_2, test_write_block, param_get_bool, &dummy_arg,S_IWUSR | S_IRUGO);
+//LGSI_CHANGE_END[panchaxari.t@lge.com] for CTS failure
 
+/* LGE_CHANGE_S [sm.shim@lge.com] 2010-08-22, merge First Boot Complete Test from VS660 */
 #define FACTORY_RESET_STR_SIZE 11
 #define FACTORY_RESET_STR "FACT_RESET_"
 static int test_read_block(char *buf, struct kernel_param *kp)
 {
 	int i;
 	int err;
-	int normal_block_seq = 0;
 	unsigned char status=0;
 	char* temp = "1";
 
 	printk(KERN_INFO"%s: read block\n", __func__);
 	test_init();
 
-	for (i = 0; i < ebcnt; ++i) {
+	for (i = 0; i < ebcnt; i++) {
 		if (bbt[i])
 			continue;
-		if (i == target_block)
+		else
 			break;
-		normal_block_seq++;
 	}
 
-	err = lge_read_block(normal_block_seq, global_buf);
+	err = lge_read_block(i, global_buf);
 	if (err) {
 		printk(KERN_INFO"%s: read %u block fail\n", __func__, i);
 		goto error;
@@ -181,7 +213,10 @@ error:
 	}
 	
 }
-module_param_call(read_block, param_set_bool, test_read_block, &dummy_arg, S_IWUSR | S_IRUGO);
+//LGSI_CHANGE_START[panchaxari.t@lge.com] for CTS failure
+module_param_call(read_block, (void*)param_get_bool, (void*)test_read_block, &dummy_arg, S_IWUSR | S_IRUGO);
+/* LGE_CHANGE_E [sm.shim@lge.com] 2010-08-22, merge First Boot Complete Test from VS660 */
+//LGSI_CHANGE_END[panchaxari.t@lge.com] for CTS failure
 
 int lge_erase_block(int ebnum)
 {
@@ -325,6 +360,9 @@ int init_mtd_access(int partition, int block)
 		goto out;
 	}
 	#endif
+	// LGE_CHANGE [dojip.kim@lge.com] 2010-08-06
+	global_buf = (unsigned char *)lge_mtd_direct_access_addr;
+
 	err = scan_for_bad_eraseblocks();
 	if (err)
 		goto out;

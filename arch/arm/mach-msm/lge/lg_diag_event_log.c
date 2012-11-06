@@ -21,6 +21,7 @@
 
 #include <linux/platform_device.h>
 #include <linux/input.h>
+#include <linux/slab.h>
 
 #define DRIVER_NAME "diag_event_log"
 
@@ -30,11 +31,9 @@ extern uint8_t lgf_factor_key_test_rsp(char);
 
 int diag_log_status = 0;
 
-/* TODO :  need to modify key map for each model */
-#define ETA_KEY_MAX     8
-
-/* key list for VS660 */
-int diag_key_list[ETA_KEY_MAX]={
+// LGE_CHANGE [dojip.kim@lge.com] 2010-08-31, add KEY_CHAT for Sprint
+/* key list */
+int diag_key_list[]= {
 	/* thunder keypad key */
 	KEY_MENU,
 	KEY_HOME,
@@ -44,20 +43,24 @@ int diag_key_list[ETA_KEY_MAX]={
 	KEY_VOLUMEDOWN,
 	/* 7k_handset key */
 	KEY_MEDIA,
+	KEY_CHAT,
 	KEY_END,
 };
 
 static int diag_event_log_connect(struct input_handler *handler,struct input_dev *dev,const struct input_device_id *id)
 {
-	int i;
+	//int i;
 	int ret;
 	struct input_handle *handle;
 	printk(" connect () %s \n\n",dev->name);
 
-	for (i = 0 ; i < ETA_KEY_MAX - 1 ; i++){
+	// LGE_CHANGE [dojip.kim@lge.com] 2010-08-31, why need?
+	/*
+	for (i = 0 ; i < ARRAY_SIZE(diag_key_list); i++){
 		if (!test_bit(diag_key_list[i], dev->keybit))
 			continue;
 	}
+	*/
 	
 	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
 	if(!handle)
@@ -140,7 +143,7 @@ int diag_event_log_end(void)
 }
 EXPORT_SYMBOL(diag_event_log_end);
 
-static int  __init diag_event_log_probe(struct platform_device *pdev)
+static int  __devinit diag_event_log_probe(struct platform_device *pdev)
 {
 	int rc = 0 ;
 	return rc;
@@ -157,12 +160,13 @@ static struct platform_driver diag_input_driver = {
 		.name = DRIVER_NAME,
 		.owner = THIS_MODULE,
 	},
+	.probe	 = diag_event_log_probe,
 	.remove = diag_event_log_remove,
 };
 
 static int __init diag_input_init(void)
 {
-	return platform_driver_probe(&diag_input_driver, diag_event_log_probe);
+	return platform_driver_register(&diag_input_driver);
 }
 
 

@@ -38,6 +38,8 @@
 #include <mach/board.h>
 #include <mach/vreg.h>
 #include <mach/board_lge.h>
+/* kzalloc needs this! */
+#include <linux/slab.h>
 
 //#define DEBUG_H2W
 #ifdef DEBUG_H2W
@@ -436,6 +438,7 @@ static int gpio_h2w_remove(struct platform_device *pdev)
 }
 
 static struct platform_driver gpio_h2w_driver = {
+	.probe		= gpio_h2w_probe,
 	.remove		= gpio_h2w_remove,
 	.driver		= {
 		.name		= "gpio-h2w",
@@ -446,7 +449,7 @@ static struct platform_driver gpio_h2w_driver = {
 static int __init gpio_h2w_init(void)
 {
 	H2W_DBG("");
-	return platform_driver_probe(&gpio_h2w_driver, gpio_h2w_probe);
+	return platform_driver_register(&gpio_h2w_driver);
 }
 
 static void __exit gpio_h2w_exit(void)
