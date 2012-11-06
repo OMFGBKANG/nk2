@@ -269,7 +269,6 @@ struct fsg_lun {
 	unsigned int	prevent_medium_removal:1;
 	unsigned int	registered:1;
 	unsigned int	info_valid:1;
-	unsigned int	nofua:1;
 
 	u32		sense_data;
 	u32		sense_data_info;
@@ -693,14 +692,6 @@ static ssize_t fsg_show_ro(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", fsg_lun_is_open(curlun)
 				  ? curlun->ro
 				  : curlun->initially_ro);
-}
-
-static ssize_t fsg_show_nofua(struct device *dev, struct device_attribute *attr,
-				char *buf)
-{
-	struct fsg_lun  *curlun = fsg_lun_from_dev(dev);
-
-	return sprintf(buf, "%u\n", curlun->nofua);
 }
 
 static ssize_t fsg_show_file(struct device *dev, struct device_attribute *attr,
