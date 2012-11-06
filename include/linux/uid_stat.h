@@ -21,15 +21,6 @@
 #ifdef CONFIG_UID_STAT
 int uid_stat_tcp_snd(uid_t uid, int size);
 int uid_stat_tcp_rcv(uid_t uid, int size);
-<<<<<<< HEAD
-
-
-#else
-#define uid_stat_tcp_snd(uid, size) do {} while (0);
-#define uid_stat_tcp_rcv(uid, size) do {} while (0);
-
-
-=======
 int uid_stat_udp_snd(uid_t uid, int size);
 int uid_stat_udp_rcv(uid_t uid, int size);
 #else
@@ -37,7 +28,6 @@ int uid_stat_udp_rcv(uid_t uid, int size);
 #define uid_stat_tcp_rcv(uid, size) do {} while (0);
 #define uid_stat_udp_snd(uid, size) do {} while (0);
 #define uid_stat_udp_rcv(uid, size) do {} while (0);
->>>>>>> dbb68eb... Update network interface
 #endif
 
 #endif /* _LINUX_UID_STAT_H */

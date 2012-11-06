@@ -39,14 +39,12 @@ static inline u32 jhash_3words(u32 a, u32 b, u32 c, u32 initval)
 
 static inline u32 jhash_2words(u32 a, u32 b, u32 initval)
 {
-	return jhash_3words(0, a, b, initval);
+	return jhash_3words(a, b, 0, initval);
 }
 
 static inline u32 jhash_1word(u32 a, u32 initval)
 {
-	return jhash_3words(0, 0, a, initval);
+	return jhash_3words(a, 0, 0, initval);
 }
 
 #endif /* _LINUX_JHASH_H */
-
-
