@@ -55,68 +55,196 @@ unsigned lge_get_lpm_info(void)
 }
 EXPORT_SYMBOL(lge_get_lpm_info);
 #endif
-/* LGE_CHANGE_S 2010-09-05, taehung.kim@lge.com
- * support to read nv flag(manual mode on)
- */
-unsigned lge_get_nv_manual_mode_state(void)
+
+#ifdef CONFIG_MACH_LGE
+unsigned lge_get_batt_volt(void)
 {
 	int err;
-	unsigned manual_mode=-1;
-	unsigned cmd_manual_mode=2;
-
-	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &manual_mode, &cmd_manual_mode);
+	unsigned ret = 0;
+	unsigned cmd = 0x3;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
 	if (err < 0) {
-		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed\n",
-		       __func__);
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
 		return err;
 	}
 
-	return manual_mode;
+	return ret;
 }
-EXPORT_SYMBOL(lge_get_nv_manual_mode_state);
+EXPORT_SYMBOL(lge_get_batt_volt);
 
-// LGE_CHANGE [dojip.kim@lge.com] 2010-08-04, power on status 
-#if defined(CONFIG_LGE_GET_POWER_ON_STATUS)
-/*
- * return value:
- *         PM_PWR_ON_EVENT_KEYPAD     0x1
- *         PM_PWR_ON_EVENT_RTC        0x2
- *         PM_PWR_ON_EVENT_CABLE      0x4
- *         PM_PWR_ON_EVENT_SMPL       0x8
- *         PM_PWR_ON_EVENT_WDOG       0x10
- *         PM_PWR_ON_EVENT_USB_CHG    0x20
- *         PM_PWR_ON_EVENT_WALL_CHG   0x40
- */
-unsigned lge_get_power_on_status(void)
+unsigned lge_get_chg_therm(void)
 {
 	int err;
-	unsigned status;
-	unsigned ftm;
-
-	err = msm_proc_comm(PCOM_GET_POWER_ON_STATUS, &status, &ftm);
+	unsigned ret = 0;
+	unsigned cmd = 0x9;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
 	if (err < 0) {
-		pr_err("%s: msm_proc_comm(PCOM_GET_POWER_ON_STATUS) failed\n",
-		       __func__);
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
 		return err;
 	}
 
-	return status;
+	return ret;
 }
-EXPORT_SYMBOL(lge_get_power_on_status);
+EXPORT_SYMBOL(lge_get_chg_therm);
+
+unsigned lge_get_pcb_version(void)
+{
+	int err;
+	unsigned ret = 0;
+	unsigned cmd = 0xA;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
+	if (err < 0) {
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
+		return err;
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL(lge_get_pcb_version);
+
+unsigned lge_get_chg_curr_volt(void)
+{
+	int err;
+	unsigned ret = 0;
+	unsigned cmd = 0xB;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
+	if (err < 0) {
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
+		return err;
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL(lge_get_chg_curr_volt);
+
+unsigned lge_get_batt_therm(void)
+{
+	int err;
+	unsigned ret = 0;
+	unsigned cmd = 0xC;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
+	if (err < 0) {
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
+		return err;
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL(lge_get_batt_therm);
+
+unsigned lge_get_batt_volt_raw(void)
+{
+	int err;
+	unsigned ret = 0;
+	unsigned cmd = 0xD;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
+	if (err < 0) {
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
+		return err;
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL(lge_get_batt_volt_raw);
+
+#ifdef CONFIG_MACH_MSM7X27_UNIVA
+unsigned lge_get_chg_stat_reg(void)
+{
+	int err;
+	unsigned ret = 0;
+	unsigned cmd = 0xE;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
+	if (err < 0) {
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
+		return err;
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL(lge_get_chg_stat_reg);
+
+unsigned lge_get_chg_en_reg(void)
+{
+	int err;
+	unsigned ret = 0;
+	unsigned cmd = 0xF;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
+	if (err < 0) {
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
+		return err;
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL(lge_get_chg_en_reg);
+
+
+unsigned lge_set_elt_test(void)
+{
+	int err;
+	unsigned ret = 0;
+	unsigned cmd = 0x10;
+
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
+	if (err < 0) {
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
+		return err;
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL(lge_set_elt_test);
+
+unsigned lge_clear_elt_test(void)
+{
+	int err;
+	unsigned ret = 0;
+	unsigned cmd = 0x11;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
+	if (err < 0) {
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
+		return err;
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL(lge_clear_elt_test);
+
+
 #endif
-// LGE_CHANGE [dojip.kim@lge.com] 2010-08-24, notify the power status
-int lge_set_sleep_status(int status)
+unsigned lge_get_nv_qem(void)
 {
-	int cmd_state = 1;
 	int err;
-
-	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &status, &cmd_state);
+	unsigned ret = 0;
+	unsigned cmd = 0x12;
+	
+	err = msm_proc_comm(PCOM_CUSTOMER_CMD2, &ret, &cmd);
 	if (err < 0) {
-		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed\n",
-		       __func__);
+		pr_err("%s: msm_proc_comm(PCOM_CUSTOMER_CMD2) failed. cmd(%d)\n",
+		       __func__, cmd);
 		return err;
 	}
 
-	return status;
+	return ret;
 }
-EXPORT_SYMBOL(lge_set_sleep_status);
+EXPORT_SYMBOL(lge_get_nv_qem);
+#endif

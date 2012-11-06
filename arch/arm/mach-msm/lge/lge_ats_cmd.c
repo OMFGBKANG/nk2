@@ -22,6 +22,22 @@
 #include <linux/syscalls.h>
 #include <linux/fcntl.h>
 
+//LGE_UPDATE_S BCPARK  2010-10-20 for reset mmc
+char *envp[] = {
+  	"HOME=/",
+  	"TERM=linux",
+  	NULL,
+  };
+  
+char *argv[] = {
+	"/system/bin/lgemmccmd",
+  	NULL,
+  	NULL,
+  };
+//LGE_UPDATE_E BCPARK  2010-10-20 for reset mmc
+
+//extern int fw_rev;
+
 void wirte_flight_mode(int mode)
 {
 	char buf[10];
@@ -53,6 +69,7 @@ int lge_ats_handle_atcmd(struct msm_rpc_server *server,
 	uint32_t at_cmd;
 	uint32_t at_act;
 	uint32_t at_param;
+    int ret = 0;	//LGE_UPDATE BCPARK
 
 	at_cmd = be32_to_cpu(args->at_cmd);
 	at_act = be32_to_cpu(args->at_act);
@@ -137,6 +154,43 @@ int lge_ats_handle_atcmd(struct msm_rpc_server *server,
 		update_atcmd_state("mmcformat", 1);
 		update_atcmd_state("mmcformat", 9);
 		break;
+
+	case ATCMD_TOUCHFWVER:
+//		ret_value1 = fw_rev;		
+		break;
+
+	//LGE_UPDATE_S seungin.choi@lge.com 2011-04-01, add AT%LEDON
+	case ATCMD_LEDON:
+		if(at_act != ATCMD_ACTION)
+			result = HANDLE_FAIL;
+
+		update_atcmd_state("ledon", at_param);
+		break;
+	//LGE_UPDATE_E seungin.choi@lge.com 2011-04-01, add AT%LEDON
+	//LGE_UPDATE_S E720 BCPARK 2010-10-19
+	case ATCMD_MMCFACTORYFORMAT :  // 131
+		if(at_act != ATCMD_ACTION)
+			result = HANDLE_FAIL;
+
+		printk(KERN_INFO "[LGE] mmc reset at command");
+		
+		if(!external_memory_test())
+			ret_value1 = 0;
+		else
+		{
+                  printk(KERN_INFO "[LGE] execute lg mmc cmd");
+                  if ((ret = call_usermodehelper(argv[0], argv, envp, UMH_WAIT_PROC)) != 0) {
+	               printk(KERN_ERR "[LGE] lgmmccmd failed to run : %i\n", ret);
+                    ret_value1 = 1;       
+                  }
+                  else{
+  	               printk(KERN_INFO "[LGE] lgmmccmd execute ok, ret = %d\n", ret);
+				  
+		    ret_value1 = 2;
+                    }
+		}
+		break;
+	//LGE_UPDATE_E E720 BCPARK 2010-10-19
 
 	default :
 		result = HANDLE_ERROR;

@@ -121,7 +121,13 @@
 // yorong drm command
 #define ATCMD_DRMIMEI		84
 #define ATCMD_POWERDOWN		85  // LGE_CHANGE [jinwoonam@lge.com] Powerdown system when no battery
+#define ATCMD_PROXIMITY		95
+#define ATCMD_ACCEL			96
+#define ATCMD_COMPASS		97
 #define ATCMD_MMCFORMAT    129
+#define ATCMD_TOUCHFWVER   130
+#define ATCMD_MMCFACTORYFORMAT	131	//LGE_UPDATE BCPARK 2010-10-19 for reset sdcard
+#define ATCMD_LEDON		132		// LGE_UPDATE seungin.choi@lge.com 2011-04-01
 
 //////////////////////////////////////////////////////////////////
 // at_cmd value end
@@ -164,5 +170,9 @@ int lge_ats_handle_atcmd(struct msm_rpc_server *server,
 							 void (*update_atcmd_state)(char *cmd, int state));
 int lge_ats_handle_atcmd_eta(struct msm_rpc_server *server,
 								 struct rpc_request_hdr *req, unsigned len);
+
+//LGE_CHAGE[irene.park@lge.com] 2010-06- 04 - to get flex value from ARM9 
+int lge_ats_handle_flex(struct msm_rpc_server *server,
+							 struct rpc_request_hdr *req, unsigned len);
 
 #endif /* _LGE_ATS_ATCMD_H_ */

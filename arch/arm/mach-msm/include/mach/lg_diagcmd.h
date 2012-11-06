@@ -395,8 +395,6 @@ Don't change previous defines and add new id at the end
 
 /* LGE_CHANGES_S [minjong.gong@lge.com] 2010-06-11, LG_FW_DIAG_SCREEN_CAPTURE */
 #define DIAG_LGF_SCREEN_SHOT_F     150
-#define DIAG_LGF_SCREEN_PARTSHOT_F     151 
-
 /* LGE_CHANGES_E [minjong.gong@lge.com] 2010-06-11, LG_FW_DIAG_SCREEN_CAPTURE */
 /* LGE_CHANGE_S [jihoon.lee@lge.com] 2010-02-07, LG_FW_MTC */
 #if defined (CONFIG_MACH_MSM7X27_THUNDERC) || defined (LG_FW_MTC)
@@ -413,7 +411,6 @@ Don't change previous defines and add new id at the end
 
 /* Number of packets defined. */
 #define DIAG_TEST_MODE_F          250  
-#define DIAG_UDM_SMS_MODE			252
 #define DIAG_LCD_Q_TEST_F         253
 
 #define DIAG_MAX_F                 255
@@ -517,42 +514,4 @@ struct lg_diag_cmd_dev {
 	int 	index;
 	int 	state;
 };
-
-#if 1 //LG_FW_MTC_GISELE
-#define BUFFER_MAX_SIZE 4096
-
-struct mtc_data_buffer
-{
-  int data_length;
-  char data[BUFFER_MAX_SIZE];
-};
-#endif
-
-#define DIAG_IOCTL_BULK_DATA    10
-
-extern void* lg_diag_mtc_req_pkt_ptr;
-extern unsigned short lg_diag_mtc_req_pkt_length;
-extern unsigned char g_diag_mtc_check;
-
-//keycode define in surf_keypad.kl
-#define KERNELHOMEKEY 0xE6
-#define KERNELBACKKEY 0x9E
-#define KERNELPPOWERKEY 0x6B
-#define KERNELPVOLUPKEY 0x73
-#define KERNELVOLDNKEY 0x72
-#define KERNELCAMERAKEY 0xD4
-#define KERNELMENUKEY 0x8B
-#define KERNELFOCUSKEY 0xF7
-
-#define APPHOMEKEY 0x94
-#define APPBACKKEY 0x92
-#define APPPOWERKEY 0x97
-#define APPVOLUPKEY 0x8F
-#define APPVOLDNKEY 0x90
-#define APPCAMERAKEY 0x96
-#define APPMENUKEY 0x93
-#define KEY_STAR 0xE3
-#define KEY_SHARP 0xE4
-//LG_FW_MTC_GISELE
-
 #endif /* LG_DIAGCMD_H */

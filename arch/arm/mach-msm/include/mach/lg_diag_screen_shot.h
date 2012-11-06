@@ -33,7 +33,6 @@ typedef enum
 {
   SCREEN_SHOT_BK_CTRL = 0,
   SCREEN_SHOT_LCD_BUF,
-	SCREEN_SHOT_SECTION_LCD_BUF
 } diag_screen_shot_sub_cmd_type;
 
 
@@ -105,8 +104,4 @@ typedef union
 	diag_lcd_get_buf_req_type lcd_buf;
 }PACKED diag_screen_shot_type;
 
-word refresh_buf[LCD_MAIN_WIDTH][LCD_MAIN_HEIGHT];
-word *sub_refresh_buf;
-static int start_px, start_py, lcd_width, lcd_height;
-static int end_px, end_py;
 #endif /* LG_DIAG_SCREEN_SHOT_H */

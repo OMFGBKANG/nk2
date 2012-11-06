@@ -5,7 +5,6 @@
 */
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include "lg_fw_diag_communication.h"
@@ -72,7 +71,6 @@ static int __devexit diagcmd_remove(struct platform_device *pdev)
 }
 
 static struct platform_driver diagcmd_driver = {
-	.probe		= diagcmd_probe,
 	.remove		= __devexit_p(diagcmd_remove),
 	.driver		= {
 		.name	= "lg_fw_diagcmd",
@@ -82,7 +80,7 @@ static struct platform_driver diagcmd_driver = {
 
 static int __init diagcmd_init(void)
 {
-	return platform_driver_register(&diagcmd_driver);
+	return platform_driver_probe(&diagcmd_driver, diagcmd_probe);
 }
 
 static void __exit diagcmd_exit(void)

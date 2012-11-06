@@ -42,7 +42,7 @@ typedef enum
   VER_MODULE  ,
   VER_LCD_REVISION=24
 
-} PACKED test_mode_req_version_type;
+} test_mode_req_version_type;
 
 typedef enum
 {
@@ -58,7 +58,7 @@ typedef enum
   HANDSET_PATH_OPEN,
   ACOUSTIC_LOOPBACK_ON,
   ACOUSTIC_LOOPBACK_OFF
-} PACKED test_mode_req_acoustic_type;
+}test_mode_req_acoustic_type;
 
 typedef enum
 {
@@ -69,7 +69,7 @@ typedef enum
   MP3_PLAYMODE_OFF,
   MP3_SAMPLE_FILE,
   MP3_NoSignal_LR_128k
-} PACKED test_mode_req_mp3_test_type;
+}test_mode_req_mp3_test_type;
 
 typedef enum
 {
@@ -79,7 +79,7 @@ typedef enum
   NC_MODE_ON,
   ONLY_MIC2_ON_NC_ON,
   ONLY_MIC1_ON_NC_ON
-} PACKED test_mode_req_speaker_phone_type;
+}test_mode_req_speaker_phone_type;
 
 typedef enum
 {
@@ -87,7 +87,7 @@ typedef enum
   VOL_LEV_MIN,
   VOL_LEV_MEDIUM,
   VOL_LEV_MAX
-} PACKED test_mode_req_volume_level_type;
+}test_mode_req_volume_level_type;
 
 #ifndef LG_BTUI_TEST_MODE
 typedef enum
@@ -97,13 +97,13 @@ typedef enum
   BT_TEST_MODE_CHECK=2,
   BT_TEST_MODE_RELEASE=5,
   BT_TEST_MODE_11=11 // 11~42
-} PACKED test_mode_req_bt_type;
+}test_mode_req_bt_type;
 
 typedef enum
 {
   BT_ADDR_WRITE=0,
   BT_ADDR_READ
-} PACKED test_mode_req_bt_rw_type;
+}test_mode_req_bt_rw_type;
 
 #define BT_RW_CNT 20
 
@@ -130,7 +130,7 @@ typedef enum
 	CAM_TEST_STROBE_LIGHT_ON,
 	CAM_TEST_STROBE_LIGHT_OFF,
 	CAM_TEST_CAMERA_SELECT = 22,
-} PACKED test_mode_req_cam_type;
+}test_mode_req_cam_type;
 
 typedef enum
 {
@@ -138,19 +138,19 @@ typedef enum
   EXTERNAL_FLASH_MEMORY_SIZE,
   EXTERNAL_SOCKET_ERASE,
   EXTERNAL_FLASH_MEMORY_USED_SIZE = 4,
-} PACKED test_mode_req_socket_memory;
+}test_mode_req_socket_memory;
 
 typedef enum
 {
   FIRST_BOOTING_COMPLETE_CHECK,
-} PACKED test_mode_req_fboot;
+}test_mode_req_fboot;
 
 typedef enum
 {
   MEMORY_TOTAL_CAPA_TEST,
   MEMORY_USED_CAPA_TEST,
   MEMORY_REMAIN_CAPA_TEST
-} PACKED test_mode_req_memory_capa_type;
+}test_mode_req_memory_capa_type;
 #ifndef SKW_TEST
 typedef enum
 {
@@ -159,7 +159,7 @@ typedef enum
   FACTORY_RESET_STATUS_CHECK,
   FACTORY_RESET_COLD_BOOT,
   FACTORY_RESET_ERASE_USERDATA = 0x0F, // for NPST dll
-} PACKED test_mode_req_factory_reset_mode_type;
+}test_mode_req_factory_reset_mode_type;
 
 typedef enum{
   FACTORY_RESET_START = 0,
@@ -167,18 +167,15 @@ typedef enum{
   FACTORY_RESET_ARM9_END = 2,
   FACTORY_RESET_COLD_BOOT_START = 3,
   FACTORY_RESET_COLD_BOOT_END = 5,
-	/* LGE_CHANGE_S [sm.shim@lge.com] 2010-09-03, add Factory reset flag 6 */
-	FACTORY_RESET_USER_START = 6,
   FACTORY_RESET_NA = 7,
-} PACKED test_mode_factory_reset_status_type;
+}test_mode_factory_reset_status_type;
 
 #endif
 typedef enum
 {
   SLEEP_MODE_ON,
-  AIR_PLAIN_MODE_ON,
-	FTM_BOOT_ON,
-} PACKED test_mode_sleep_mode_type;
+  AIR_PLAIN_MODE_ON
+}test_mode_sleep_mode_type;
 
 /* LGE_FACTORY_TEST_MODE for Photo Sensor(ALC) */
 typedef enum
@@ -187,7 +184,7 @@ typedef enum
 	ALC_TEST_MODE_ON,
 	ALC_TEST_CHECK_STATUS,
 	ALC_TEST_AUTOTEST
-} PACKED test_mode_req_alc_type;
+} test_mode_req_alc_type;
 
 typedef enum
 {
@@ -197,14 +194,14 @@ typedef enum
   CAL_DATA_RESTORE,
   CAL_DATA_ERASE,
   CAL_DATA_INFO
-} PACKED test_mode_req_test_script_mode_type;
+}test_mode_req_test_script_mode_type;
 
 /* TEST_MODE_PID_TEST */
 typedef enum
 {
   PID_WRITE,
   PID_READ
-} PACKED test_mode_req_pid_type;
+}test_mode_req_pid_type;
 
 
 /* TEST_MODE_SW_VERSION */
@@ -214,14 +211,14 @@ typedef enum
   SW_OUTPUT_VERSION,
   SW_COMPLETE_VERSION,
   SW_VERSION_CHECK
-} PACKED test_mode_req_sw_version_type;
+} test_mode_req_sw_version_type;
 
 /* TEST_MODE_CAL_CHECK */
 typedef enum
 {
  CAL_CHECK,
  CAL_DATA_CHECK,
-} PACKED test_mode_req_cal_check_type;
+} test_mode_req_cal_check_type;
 
 /* LGE_CHANGES_S, [jaffrhee@lge.com], 2010-08-03, <DB Integrity Check > */
 /* TEST_MODE_DB_INTEGRITY_CHECK */
@@ -230,16 +227,8 @@ typedef enum
   DB_INTEGRITY_CHECK=0,
   DB_CHECK_DUMP_TO_INTERNAL_MEMORY,
   DB_CHECK_COPY_TO_SD_CARD
-} PACKED test_mode_req_db_check;
+} test_mode_req_db_check;
 /* LGE_CHANGES_E, [jaffrhee@lge.com], 2010-08-03, <DB Integrity Check > */
-
-/* LGE_CHANGE_S [taehung.kim@lge.com] 2010-11-24 support led testmode */
-typedef enum
-{
-  LED_TEST_ON,
-  LED_TEST_OFF
-} PACKED test_mode_req_led_test_type;
-/* LGE_CHANGE_E [taehung.kim@lge.com] 2010-11-24 */
 
 typedef union
 {
@@ -268,9 +257,6 @@ typedef union
   test_mode_req_sw_version_type	sw_version;
   test_mode_req_cal_check_type		cal_check;
   test_mode_req_db_check		db_check;
-/* LGE_CHANGE_S [taehung.kim@lge.com] 2010-11-24 support led testmode */
-  test_mode_req_led_test_type		led_status;
-/* LGE_CHANGE_E [taehung.kim@lge.com] 2010-11-24 */
 #if 0
   test_mode_req_lcd_type			lcd;
   test_mode_req_folder_type			folder;
@@ -502,9 +488,6 @@ typedef enum
   TEST_MODE_PRELOAD_INTEGRITY_TEST,
   TEST_MODE_FIRST_BOOT_COMPLETE_TEST = 58,
 
-/* LGE_CHANGE_S [taehung.kim@lge.com] 2010-11-24 support led testmode */
-  TEST_MODE_LED_TEST = 60,
-/* LGE_CHANGE_S [taehung.kim@lge.com] */
   TEST_MODE_PID_TEST = 70,		// pid R/W
   TEST_MODE_SW_VERSION = 71,
   TEST_MODE_IME_TEST,
@@ -521,8 +504,6 @@ typedef enum
   TEST_MODE_BLUETOOTH_TEST_RW=83,
 #endif //LG_BTUI_TEST_MODE
   TEST_MODE_SKIP_WELCOM_TEST = 87,
-  TEST_MODE_MAC_READ_WRITE = 88, 
-
   //[START]LGE_DB_CHECK: jaffrhee@lge.com 2010-08-02
   TEST_MODE_DB_INTEGRITY_CHECK=91,
   //[END]LGE_DB_CHECK: jaffrhee@lge.com 2010-08-02

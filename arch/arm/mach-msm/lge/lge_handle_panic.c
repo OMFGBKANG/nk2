@@ -80,10 +80,9 @@ struct panic_log_dump {
 	unsigned char buffer[0];
 };
 
-static int (*reboot_key_detect)(void) = NULL;
-
 #ifndef CONFIG_LGE_HIDDEN_RESET_PATCH
 static struct panic_log_dump *panic_dump_log;
+static int (*reboot_key_detect)(void) = NULL;
 static char *panic_init_strings[] = {
 	"K e r n e l   p a n i c   h a s   b e e n   g e n e r a t e d . . . ",
 	"F o l l o w i n g   m e s s a g e s   s h o w   c p u   c o n t e x t ",
@@ -98,6 +97,8 @@ static char *panic_init_strings[] = {
 };
 
 static DEFINE_SPINLOCK(lge_panic_lock);
+#else
+static int (*reboot_key_detect)(void) = NULL;
 #endif
 
 static int dummy_arg;
@@ -109,7 +110,7 @@ static int gen_panic(const char *val, struct kernel_param *kp)
 }
 module_param_call(gen_panic, gen_panic, param_get_bool, &dummy_arg, S_IWUSR | S_IRUGO);
 
-static int display_lk_enable = 1;
+static int display_lk_enable = 0;
 module_param_named(
 		display_lk_enable, display_lk_enable,
 		int, S_IRUGO | S_IWUSR | S_IWGRP);
@@ -119,9 +120,8 @@ module_param_named(
 		display_kernel_enable, display_kernel_enable,
 		int, S_IRUGO | S_IWUSR | S_IWGRP);
 
-
+#ifdef CONFIG_LGE_BLUE_ERROR_HANDLER
 int hidden_reset_enable = 0;
-#ifdef CONFIG_LGE_HIDDEN_RESET_PATCH
 module_param_named(
 		hidden_reset_enable, hidden_reset_enable,
 		int, S_IRUGO | S_IWUSR | S_IWGRP);
@@ -211,7 +211,7 @@ static int copy_frame_buffer(struct notifier_block *this, unsigned long event,
 	void *fb_addr;
 	void *copy_addr;
 	void *copy_phys_addr;
-	int fb_size = 320 * 480 * 2;
+	int fb_size = HIDDEN_RESET_FB_SIZE;
 
 	copy_addr = lge_get_fb_copy_virt_addr();
 	fb_addr = lge_get_fb_addr();
@@ -422,8 +422,7 @@ static int __devexit lge_panic_handler_remove(struct platform_device *pdev)
 	return 0;
 }
 
-static struct platform_driver panic_handler_driver __refdata = {
-	.probe = lge_panic_handler_probe,
+static struct platform_driver __refdata panic_handler_driver = {
 	.remove = __devexit_p(lge_panic_handler_remove),
 	.driver = {
 		.name = PANIC_HANDLER_NAME,
@@ -433,7 +432,7 @@ static struct platform_driver panic_handler_driver __refdata = {
 
 static int __init lge_panic_handler_init(void)
 {
-	return platform_driver_register(&panic_handler_driver);
+	return platform_driver_probe(&panic_handler_driver, lge_panic_handler_probe);
 }
 
 static void __exit lge_panic_handler_exit(void)
