@@ -1,3 +1,7 @@
+#ifdef CONFIG_SCHED_BFS
+#include "sched_bfs.c"
+#else
+
 /*
  *  kernel/sched.c
  *

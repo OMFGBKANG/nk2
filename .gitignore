@@ -59,7 +59,9 @@ testkern.sh
 include/config
 include/linux/version.h
 include/generated
-
+usr/gen_init_cpio
+usr/initramfs_data.cpio
+arch/arm/kernel/vmlinux.lds
 # stgit generated dirs
 patches-*
 

@@ -48,7 +48,7 @@
 #define MSM_PMEM_ADSP_SIZE	0xB71000
 #define MSM_PMEM_AUDIO_SIZE	0x5B000
 #define MSM_FB_SIZE		0x200000
-#define MSM_GPU_PHYS_SIZE	SZ_2M
+
 #define PMEM_KERNEL_EBI1_SIZE	0x1C000
 
 /* Using lower 1MB of OEMSBL memory for GPU_PHYS */
@@ -62,6 +62,12 @@
 #define LS670_TA_CHG_CURRENT	700
 #define LS670_USB_CHG_CURRENT	400
 
+#ifdef CONFIG_MACH_MSM7X27_MUSCAT
+/* I dont know why I allocate bigger than real lcd size in muscat , because EBI2 interface? */
+#define HIDDEN_RESET_FB_SIZE 165600
+#else
+#define HIDDEN_RESET_FB_SIZE (320*480*2)
+#endif
 /* board revision information */
 enum {
 	EVB         = 0,
@@ -89,17 +95,40 @@ struct gpio_i2c_pin {
 };
 
 /* touch screen platform data */
+//LGE_DEV_PORTING UNIVA_S
+// [LGE PATCH : START] edward1.kim@lge.com 20110214  
+#if 1
+struct touch_platform_data {
+	int ts_x_min;
+	int ts_x_max;
+	int ts_y_min;
+	int ts_y_max;
+	int ts_y_start;
+	int ts_y_scrn_max;
+	int (*power)(unsigned char onoff);
+	int (*pulldown)(int onoff);
+	int irq;
+	int gpio_int;// [LGE PATCH] edward1.kim@lge.com 20110214  
+	int hw_i2c;
+	int scl;
+	int sda;
+	int ce;
+	int touch_key;
+};
+#else
 struct touch_platform_data {
 	int ts_x_min;
 	int ts_x_max;
 	int ts_y_min;
 	int ts_y_max;
 	int (*power)(unsigned char onoff);
-	int (*pulldown)(int onoff);
 	int irq;
 	int scl;
 	int sda;
 };
+#endif
+// [LGE PATCH : END] edward1.kim@lge.com 20110214
+//LGE_DEV_PORTING UNIVA_E  
 
 /* pp2106 qwerty platform data */
 struct pp2106_platform_data {
@@ -110,6 +139,7 @@ struct pp2106_platform_data {
 	unsigned int keypad_row;
 	unsigned int keypad_col;
 	unsigned char *keycode;
+	int (*power)(unsigned char onoff);
 };
 
 /* atcmd virtual keyboard platform data */
@@ -154,7 +184,31 @@ struct acceleration_platform_data {
 	int (*power)(unsigned char onoff);
 };
 
-/* kr3dh acceleration platform data */
+/* acceleration platform data */
+/* k3dh */
+
+struct k3dh_platform_data {
+	int poll_interval;
+	int min_interval;
+
+	u8 g_range;
+
+	u8 axis_map_x;
+	u8 axis_map_y;
+	u8 axis_map_z;
+
+	u8 negate_x;
+	u8 negate_y;
+	u8 negate_z;
+
+	int (*kr_init)(void);
+	void (*kr_exit)(void);
+	int (*power_on)(void);
+	int (*power_off)(void);
+	int (*gpio_config)(int config);
+};
+
+
 struct kr3dh_platform_data {
 	int poll_interval;
 	int min_interval;
@@ -174,6 +228,7 @@ struct kr3dh_platform_data {
 	int (*power_on)(void);
 	int (*power_off)(void);
 	int (*gpio_config)(int config);
+	int (*device_id) (void);
 };
 
 /* ecompass platform data */
@@ -246,11 +301,24 @@ struct aat28xx_platform_data {
 	int gpio;
 	unsigned int mode;		     /* initial mode */
 	int max_current;			 /* led max current(0-7F) */
-	int init_on_boot;			 /* flag which initialize on system boot */
+	int initialized;			 /* flag which initialize on system boot */
+
 	int version;				 /* Chip version number */
 };
 int aat28xx_ldo_enable(struct device *dev, unsigned num, unsigned enable);
 int aat28xx_ldo_set_level(struct device *dev, unsigned num, unsigned vol);
+void aat28xx_power(struct device *dev, int on);
+
+//LGE_DEV_PORTING UNIVA_S
+struct lm3530_platform_data {
+	void (*platform_init)(void);
+	int gpio;
+	unsigned int mode;		     /* initial mode */
+	int max_current;			 /* led max current(0-7F) */
+	int init_on_boot;			 /* flag which initialize on system boot */
+	int version;				 /* Chip version number */
+};
+//LGE_DEV_PORTING UNIVA_E
 
 /* rt9393 backlight */
 struct rt9393_platform_data {
@@ -269,6 +337,10 @@ struct msm_panel_lgit_pdata {
 };
 
 /* Define new structure named 'msm_panel_hitachi_pdata' */
+#define PANEL_ID_AUO          0
+#define PANEL_ID_HITACHI      1
+#define PANEL_ID_TOVIS        2
+#define PANEL_ID_LGDISPLAY    3
 struct msm_panel_hitachi_pdata {
 	int gpio;
 	int (*backlight_level)(int level, int max, int min);
@@ -277,6 +349,32 @@ struct msm_panel_hitachi_pdata {
 	void (*panel_config_gpio)(int);
 	int *gpio_num;
 	int initialized;
+	int maker_id;
+};
+
+
+
+// LGE_DEV_PORTING UNIVA_S [ks82.jung@lge.com]
+/* Define new structure named 'msm_panel_ldp_pdata' */
+#define PANEL_ID_AUO      0
+#define PANEL_ID_LDP      1
+struct msm_panel_ldp_pdata {
+	int gpio;
+	int (*backlight_level)(int level, int max, int min);
+	int (*pmic_backlight)(int level);
+	int (*panel_num)(void);
+	void (*panel_config_gpio)(int);
+	int *gpio_num;
+	int initialized;
+	int maker_id;
+};
+// LGE_DEV_PORTING UNIVA_E [ks82.jung@lge.com]
+
+struct msm_panel_ilitek_pdata {
+	int gpio;
+	int initialized;
+	int maker_id;
+	int (*lcd_power_save)(int);
 };
 
 struct msm_panel_novatek_pdata {
@@ -321,11 +419,11 @@ enum {
 };
 
 extern int hidden_reset_enable;
-#ifdef CONFIG_LGE_HIDDEN_RESET_PATCH
+
 extern int on_hidden_reset;
 void *lge_get_fb_addr(void);
 void *lge_get_fb_copy_phys_addr(void);
-#endif
+
 void *lge_get_fb_copy_virt_addr(void);
 
 struct lge_panic_handler_platform_data {
@@ -338,9 +436,24 @@ int lge_gpio_switch_pass_event(char *sdev_name, int state);
 unsigned lge_get_pif_info(void);
 unsigned lge_get_lpm_info(void);
 
+unsigned lge_get_batt_volt(void);
+unsigned lge_get_chg_therm(void);
+unsigned lge_get_pcb_version(void);
+unsigned lge_get_chg_curr_volt(void);
+unsigned lge_get_batt_therm(void);
+unsigned lge_get_batt_volt_raw(void);
+#ifdef CONFIG_MACH_MSM7X27_UNIVA
+unsigned lge_get_chg_stat_reg(void);
+unsigned lge_get_chg_en_reg(void);
+unsigned lge_set_elt_test(void);
+unsigned lge_clear_elt_test(void);
+#endif
+unsigned lge_get_nv_qem(void);
+
 #define CAMERA_POWER_ON				0
 #define CAMERA_POWER_OFF			1
 int camera_status(void);
+
 
 typedef void (gpio_i2c_init_func_t)(int bus_num);
 int __init init_gpio_i2c_pin(struct i2c_gpio_platform_data *i2c_adap_pdata,
