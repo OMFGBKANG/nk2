@@ -26,6 +26,7 @@
 #include <linux/delay.h>
 #include <linux/timer.h>
 #include <linux/err.h>
+#include <linux/sched.h>
 #include <mach/board_lge.h>
 #include <mach/timed_output.h>
 
@@ -48,7 +49,7 @@ struct work_struct vib_power_set_work_queue;
 static struct workqueue_struct *vibrator_wq = NULL;
 #endif	/* CONFIG_VIB_USE_WORK_QUEUE */
 
-static int android_vibrator_intialize(void)
+static int android_vibrator_initialize(void)
 {
 #if 0
 	/* Enable Vibraror LDO Power */
@@ -171,7 +172,7 @@ static int vibrator_get_time(struct timed_output_dev *dev)
 
 	if (hrtimer_active(&data->timer)) {
 		ktime_t r = hrtimer_get_remaining(&data->timer);
-		return r.tv.sec * 1000 + r.tv.nsec / 1000000;
+		return r.tv64;
 	} else
 		return 0;
 }
@@ -271,7 +272,7 @@ static int android_vibrator_probe(struct platform_device *pdev)
 	vibe_data = (struct android_vibrator_platform_data *)pdev->dev.platform_data;
 	atomic_set(&vibe_gain,vibe_data->amp_value);
 
-	if (android_vibrator_intialize() < 0) {
+	if (android_vibrator_initialize() < 0) {
 		printk(KERN_ERR "Android Vibrator Initialization was failed\n");
 		return -1;
 	}
@@ -331,7 +332,7 @@ static int android_vibrator_suspend(struct platform_device *pdev, pm_message_t s
 static int android_vibrator_resume(struct platform_device *pdev)
 {
 	printk(KERN_INFO "LGE: Android Vibrator Driver Resume\n");
-	android_vibrator_intialize();
+	android_vibrator_initialize();
 	return 0;
 }
 #endif
