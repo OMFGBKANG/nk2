@@ -569,7 +569,11 @@ static inline int dpm_suspend_start(pm_message_t state)
 
 #define suspend_report_result(fn, ret)		do {} while (0)
 
-static inline void device_pm_wait_for_dev(struct device *a, struct device *b) {}
+static inline int device_pm_wait_for_dev(struct device *a, struct device *b) 
+{ 
+  return 0; 
+} 
+
 
 static inline void pm_wakeup_event(struct device *dev, unsigned int msec) {}
 static inline void pm_stay_awake(struct device *dev) {}
