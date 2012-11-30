@@ -328,9 +328,9 @@ void mmc_set_data_timeout(struct mmc_data *data, const struct mmc_card *card)
 			 * insufficient for some crappy cards.
 			 */
 #if 1//def CONFIG_LGE_MMC_WORKAROUND//LGE_CHANGES
-			limit_us = 500000;
+			limit_us = 3000000;
 #else
-			limit_us = 300000;
+			limit_us = 500000;
 #endif
 		else
 			limit_us = 100000;
