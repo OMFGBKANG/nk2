@@ -329,7 +329,7 @@ static void suspend(struct work_struct *work)
 	}
 
 	entry_event_num = current_event_num;
-	suspend_sys_sync_queue();
+	sys_sync();
 	if (debug_mask & DEBUG_SUSPEND)
 		pr_info("suspend: enter suspend\n");
 	ret = pm_suspend(requested_suspend_state);
@@ -641,7 +641,6 @@ static int __init wakelocks_init(void)
 
 	return 0;
 
-err_suspend_sys_sync_work_queue:
 err_suspend_work_queue:
 	platform_driver_unregister(&power_driver);
 err_platform_driver_register:
@@ -661,7 +660,6 @@ static void  __exit wakelocks_exit(void)
 	remove_proc_entry("wakelocks", NULL);
 #endif
 	destroy_workqueue(suspend_work_queue);
-	destroy_workqueue(suspend_sys_sync_work_queue);
 	platform_driver_unregister(&power_driver);
 	platform_device_unregister(&power_device);
 	wake_lock_destroy(&unknown_wakeup);
